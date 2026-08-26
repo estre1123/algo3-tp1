@@ -99,6 +99,8 @@ public class BufferGap<T> implements Iterable<T> {
 
 
 	//la funcion q mueve el cursor, mas bien yo le diria cantidadAMover pq el nombre me hace pensar q lo de le paso es el indice deseado o que pero bueno tp dice que si y yo hago caso
+
+
 	public void moverCursor(int delta) {
 		// Verificar que el cursor no se salga de array por ninguno de los dos lados
 		if ((this.inicioHueco + delta) < 0 || (delta + this.finHueco) > this.capacidad()) {

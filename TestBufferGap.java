@@ -90,5 +90,18 @@ public class TestBufferGap {
 			cantElementos++;
 		}
 		System.out.printf("%-28d\t%-24d\t%d\n", N, bf.desplazamientos(), desplazamientosIng);
+		/*
+		la columna del bufferGap es constantemente 0, ya que insertar caracteres no implica MOVER ningun elemento, ya que solo se esta ocupando el espacio YA disponible del hueco del buffer.
+		En cambio el arreglo ingenuo, al insertar un char o lo que sea, debe mover los n/2 elementos que estan a la derecha del cursor para hacer el espacio que se necesita, ej:
+		si tengo
+		a b c d e f
+		y quiero insertar una X en la posicion 3...
+		a b c _ e f
+		dentre que mover la d, la e y la f a la derecha para que quede espacio
+		a b c _ d e f
+		esto implica un desplazamiento por cada item movido (3), pero a medida que voy insertando mas caracteres, el numero de desplazamientos va aumentando ya que hay MAS elementos a mover, es por eso que el arreglo ingenuo tiene un nro de desplazamientos totalmente superior y que aumenta a medida que n aumenta, el calculo seria algo como (n/2) * cantidad a insertar, ya que por cada item a insertar debe mover n/2 elementos
+		totalmente insano
+
+		*/
 	}
 }

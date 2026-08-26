@@ -4,6 +4,7 @@ public class TestHistorial {
 		HistorialEdicion historial = new HistorialEdicion();
 
 		System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Nro Operacion", "Operacion", "Contenido", "desh", "reh");
+		System.out.println("-----------------------------------------------------------------------------------");
 
 		//basicamente dejar el buffer donde pide pero usando el historial
 		buffer.insertar('H');

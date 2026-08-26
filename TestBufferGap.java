@@ -5,11 +5,13 @@ public class TestBufferGap {
 	public static void main(String[] args) throws BufferVacioException {
 		System.out.println("Test 1:");
 		test1();
-		System.out.println("Test 2:");
+		System.out.println("\nTest 2:");
+		test2();
+		System.out.println("\nTest 3:");
 		System.out.println("N \t Desplazamientos BufferGap \t Desplazamientos arreglo simple");
 		System.out.println("-- \t ------------------------- \t ------------------------------");
     	for (int n = 100000; n <= 1000000; n += 100000) {
-        	test2(n);
+        	test3(n);
     	}
 	}
 
@@ -48,7 +50,42 @@ public class TestBufferGap {
 
 	}
 
-	public static void test2(int N) {
+	public static void test2() {
+		BufferGap<Character> bf = new BufferGap<>();
+		String abc = "abcdefghijklmnopqrstuvwxyz";
+		int cantidad = 0;
+		int N = 100000;
+		char[] caracteres = new char[N];
+
+		//insertar caracteres aleatorios
+		for (int i = 0; i <  N; i++) {
+			char c = abc.charAt((int) (Math.random() * abc.length()));
+			bf.insertar(c);
+			caracteres[i] = c;
+			cantidad++;
+		}
+		System.out.println("La cantidad Insertada es: " + cantidad);
+		System.out.println("La cantidad de elementos en el buffer es: " + bf.size());
+		System.out.println("La coincidencia es: " + (cantidad == bf.size()));
+
+		boolean bufferCoincide = true;
+		int iteraciones = 0;
+		for (Character character : bf) {
+			if (iteraciones >= N || character.compareTo(caracteres[iteraciones]) != 0) {
+				bufferCoincide = false;
+				break;
+			}
+			iteraciones++;
+		}
+
+		System.out.println("La coincidencia de elementos es: " + bufferCoincide);
+		System.out.println("Capacidad del buffer: " + bf.capacidad());
+		System.out.println("Desplazamientos realizados: " + bf.desplazamientos());
+
+	}
+
+
+	public static void test3(int N) {
 		String abc = "abcdefghijklmnopqrstuvwxyz";
 		//elementos q d vd importan digamos
 		int cantidadAInsertar = 10000;

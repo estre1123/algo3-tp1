@@ -103,9 +103,11 @@ public class BufferGap<T> implements Iterable<T> {
 
 	public void moverCursor(int delta) {
 		// Verificar que el cursor no se salga de array por ninguno de los dos lados
-		if ((this.inicioHueco + delta) < 0 || (delta + this.finHueco) > this.capacidad()) {
+		boolean seSaleIzq = (this.inicioHueco + delta) < 0;
+		boolean seSaleDer = (delta + this.finHueco) > this.capacidad();
+		if ((seSaleIzq) || (seSaleDer)) {
 			// arrojar el error pedido
-			throw new PosicionInvalidaException("Posicion invalida para el indice, el cursor no puede moverse a esa posicion");
+			throw new PosicionInvalidaException("El cursor se sale del buffer, no se puede mover a la posicion: " + (seSaleIzq ? this.inicioHueco + delta : this.finHueco + delta));
 		}
 		// mover todos los elementos como corresponde
 		if (delta > 0) {

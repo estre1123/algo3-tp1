@@ -1,3 +1,4 @@
+package excepciones;
 /*
 grupo:g_tq6
 Nro tarea: TP1
@@ -10,8 +11,10 @@ No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
 
-public interface Comando {
-    void ejecutar();
-    void deshacer();
-    String descripcion();
+public class BufferVacioException extends Exception {
+
+	public BufferVacioException(String errorMsg) {
+		super(errorMsg);
+
+	}
 }

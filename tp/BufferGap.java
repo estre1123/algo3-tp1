@@ -9,9 +9,12 @@ No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, so
 No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
-
+package tp;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import excepciones.BufferVacioException;
+import excepciones.PosicionInvalidaException;
 
 public class BufferGap<T> implements Iterable<T> {
 

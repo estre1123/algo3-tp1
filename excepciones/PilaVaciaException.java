@@ -1,3 +1,4 @@
+package excepciones;
 /*
 grupo:g_tq6
 Nro tarea: TP1
@@ -9,11 +10,10 @@ No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, so
 No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
+public class PilaVaciaException extends Exception {
 
-public class BufferVacioException extends Exception {
+    public PilaVaciaException(String msg){
+        super(msg);
+    }
 
-	public BufferVacioException(String errorMsg) {
-		super(errorMsg);
-
-	}
 }

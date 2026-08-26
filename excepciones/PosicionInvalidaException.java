@@ -1,3 +1,4 @@
+package excepciones;
 /*
 grupo:g_tq6
 Nro tarea: TP1
@@ -10,23 +11,8 @@ No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
 
-public class TestPila {
-
-    public static void main(String[] args) {
-
-        PilaES<String> pila = new PilaES<>();
-
-        pila.apilar("A");
-        pila.apilar("B");
-        pila.apilar("C");
-
-        System.out.println("Tope: " + pila.tope());
-        System.out.println("Size: " + pila.size());
-
-        System.out.println("Desapilar: " + pila.desapilar());
-        System.out.println("Desapilar: " + pila.desapilar());
-
-        System.out.println("Tope: " + pila.tope());
-        System.out.println("Size: " + pila.size());
-    }
+public class PosicionInvalidaException extends RuntimeException{
+	public PosicionInvalidaException(String errorMsg) {
+		super(errorMsg);
+	}
 }

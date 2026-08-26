@@ -81,14 +81,14 @@ public class BufferGap<T> implements Iterable<T> {
 
 	//getters y setters para el arr lgm pude haber externalizado la verificacion del index pero asi nm nb
 	public T get(int index) {
-		if (index < 0 || index > this.size()) {
+		if (index < 0 || index >= this.size()) {
 			throw new PosicionInvalidaException("Posicion invalida para el indice dado");
 		}
 		return this.datos[parseToIndiceFisico(index)];
 	}
 
 	public T set(T obj, int index) {
-		if (index < 0 || index > this.size()) {
+		if (index < 0 || index >= this.size()) {
 			throw new PosicionInvalidaException("Posicion invalida para el indice dado");
 		}
 		int indexFisico = parseToIndiceFisico(index);
@@ -152,6 +152,8 @@ public class BufferGap<T> implements Iterable<T> {
 		for (int i = 0; i < elementosSobrantes; i++) {
 			newArr[i + newFinHueco] = this.datos[this.finHueco + i];
 		}
+		//segun el pdf la copia de elementos de una celda a otra IMPLICA un desplazamiento, entonces se le suma basicamente los elementos copiados
+		this.desplazamientos += this.inicioHueco + elementosSobrantes;
 		this.finHueco = newFinHueco;
 		this.datos = newArr;
 		//System.out.println("Capacidad redoblada!");
@@ -161,7 +163,7 @@ public class BufferGap<T> implements Iterable<T> {
 	// util
 	private int parseToIndiceFisico(int n) {
 		if (n < this.inicioHueco) {
-			return this.finHueco;
+			return n;
 		}
 		return n + (this.finHueco - this.inicioHueco);
 	}

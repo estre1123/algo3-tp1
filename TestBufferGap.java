@@ -91,7 +91,7 @@ public class TestBufferGap {
 		}
 		System.out.printf("%-28d\t%-24d\t%d\n", N, bf.desplazamientos(), desplazamientosIng);
 		/*
-		la columna del bufferGap es constantemente 0, ya que insertar caracteres no implica MOVER ningun elemento, ya que solo se esta ocupando el espacio YA disponible del hueco del buffer.
+		la columna del bufferGap es constantemente 0, ya que insertar caracteres no implica MOVER ningun elemento, ya que solo se esta ocupando el espacio YA disponible del hueco del buffer, y como este es ya tiene el espacio necesario, no se redimensiona, y como reiniciamos el desplazamiento en n/2, no hay desplazamientos adicionales.
 		En cambio el arreglo ingenuo, al insertar un char o lo que sea, debe mover los n/2 elementos que estan a la derecha del cursor para hacer el espacio que se necesita, ej:
 		si tengo
 		a b c d e f

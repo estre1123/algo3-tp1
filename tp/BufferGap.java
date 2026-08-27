@@ -9,9 +9,12 @@ No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, so
 No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
-
+package tp;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import excepciones.BufferVacioException;
+import excepciones.PosicionInvalidaException;
 
 public class BufferGap<T> implements Iterable<T> {
 
@@ -115,9 +118,11 @@ public class BufferGap<T> implements Iterable<T> {
 
 	public void moverCursor(int delta) {
 		// Verificar que el cursor no se salga de array por ninguno de los dos lados
-		if ((this.inicioHueco + delta) < 0 || (delta + this.finHueco) > this.capacidad()) {
+		boolean seSaleIzq = (this.inicioHueco + delta) < 0;
+		boolean seSaleDer = (delta + this.finHueco) > this.capacidad();
+		if ((seSaleIzq) || (seSaleDer)) {
 			// arrojar el error pedido
-			throw new PosicionInvalidaException("Posicion invalida para el indice, el cursor no puede moverse a esa posicion");
+			throw new PosicionInvalidaException("El cursor se sale del buffer, no se puede mover a la posicion: " + (seSaleIzq ? this.inicioHueco + delta : this.finHueco + delta));
 		}
 		// mover todos los elementos como corresponde
 		if (delta > 0) {

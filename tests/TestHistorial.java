@@ -1,3 +1,4 @@
+package tests;
 /*
 grupo:g_tq6
 Nro tarea: TP1
@@ -10,12 +11,20 @@ No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
 
+import comandos.ComandoBorrar;
+import comandos.ComandoInsertar;
+import comandos.ComandoMoverCursor;
+import excepciones.PilaVaciaException;
+import tp.BufferGap;
+import tp.HistorialEdicion;
+
 public class TestHistorial {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws PilaVaciaException {
 		BufferGap<Character> buffer = new BufferGap<Character>();
 		HistorialEdicion historial = new HistorialEdicion();
 
 		System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Nro Operacion", "Operacion", "Contenido", "desh", "reh");
+		System.out.println("-----------------------------------------------------------------------------------");
 
 		//basicamente dejar el buffer donde pide pero usando el historial
 		buffer.insertar('H');

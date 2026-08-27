@@ -1,3 +1,4 @@
+package tp;
 /*
 grupo:g_tq6
 Nro tarea: TP1
@@ -9,6 +10,8 @@ No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, so
 No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
+
+import excepciones.PilaVaciaException;
 
 public class HistorialEdicion {
 	//para guardar lo que saco
@@ -30,7 +33,7 @@ public class HistorialEdicion {
         rehacer = new PilaES<>();
     }
 
-    public boolean deshacer() {
+    public boolean deshacer() throws PilaVaciaException {
 		//si la lista de deshacer esta vacia entonces retorna falso
         if (deshacer.estaVacia()) {
             return false;
@@ -48,7 +51,7 @@ public class HistorialEdicion {
         return true;
     }
 
-    public boolean rehacer() {
+    public boolean rehacer() throws PilaVaciaException {
 		//si esta vacio no se puede hacer nada
         if (rehacer.estaVacia()) {
             return false;

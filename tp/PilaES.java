@@ -1,3 +1,4 @@
+package tp;
 /*
 grupo:g_tq6
 Nro tarea: TP1
@@ -9,6 +10,8 @@ No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, so
 No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
 */
+
+import excepciones.PilaVaciaException;
 
 public class PilaES<E> {
 
@@ -32,9 +35,9 @@ public class PilaES<E> {
         cantidad++;
     }
 
-    public E desapilar() {
+    public E desapilar() throws PilaVaciaException {
         if (estaVacia()) {
-            throw new RuntimeException("La pila esta vacia");
+            throw new PilaVaciaException("La pila esta vacia");
         }
 
         E dato = tope.dato;
@@ -44,9 +47,9 @@ public class PilaES<E> {
         return dato;
     }
 
-    public E tope() {
+    public E tope() throws PilaVaciaException {
         if (estaVacia()) {
-            throw new RuntimeException("La pila esta vacia");
+            throw new PilaVaciaException("La pila esta vacia");
         }
 
         return tope.dato;

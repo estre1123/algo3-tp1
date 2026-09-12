@@ -72,9 +72,6 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 	}
 
 	//falta eliminar, pero eso despues hago
-
-
-
 	public V eliminar(K clave) throws ClaveInexistenteException, ClaveNulaException {
 		// Verificar que la clave no sea nula
 		if (clave == null) {
@@ -353,8 +350,73 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		return cuantosMenores(clave) + 1;
 
 	}
+	//sucesor
+	public K sucesor(K clave) throws ClaveInexistenteException{
+		Nodo<K,V> nodo = encNodo(this.raiz, clave);
+		if (nodo == null) {
+			throw new ClaveInexistenteException("La clave no existe.");
+		}
+		Nodo<K,V> sucesor = encSucesorInorden(this.raiz, clave);
+		if (sucesor == null) {
+			return null;
+		}
+		return sucesor.clave;
+	}
+	private Nodo<K,V> encSucesorInorden(Nodo<K,V> nodo,K clave){
+		// Encontrar el nodo que contiene la clave
+		Nodo<K,V> nodoActual = encNodo(nodo, clave);
+		// si tiene subárbol derecho
+		if (nodoActual.der != null) {
+			Nodo<K,V> sucesor = nodoActual.der;
+			// Buscamos el menor del subárbol derecho
+			while (sucesor.izq != null) {
+				sucesor = sucesor.izq;
+			}
+			return sucesor;
+		}
 
+		// si no tiene subárbol derecho
+		// Buscar hacia arriba el primer padre mayor que nodoActual
+		Nodo<K,V> padre = encNodoPadre(this.raiz, nodoActual.clave);
+		while (padre != null && padre.clave.compareTo(nodoActual.clave) < 0) {
+			padre = encNodoPadre(this.raiz, padre.clave);
+		}
+		return padre;
+	}
 
+	//predecesor
+	public K predecesor(K clave) throws ClaveInexistenteException{
+		Nodo<K,V> nodo = encNodo(this.raiz, clave);
+		if (nodo == null) {
+			throw new ClaveInexistenteException("La clave no existe.");
+		}
+		Nodo<K,V> predecesor = encPredecesor(this.raiz, clave);
+		if (predecesor == null) {
+			return null;
+		}
+		return predecesor.clave;
+	}
+	private Nodo<K,V> encPredecesor(Nodo<K,V> nodo,K clave){
+		// Encontrar el nodo que contiene la clave
+		Nodo<K,V> nodoActual = encNodo(nodo, clave);
+		// si tiene subárbol izqueirdo
+		if (nodoActual.izq != null) {
+			Nodo<K,V> predecesor = nodoActual.izq;
+			// Buscamos el mayor del subárbol izquierdo
+			while (predecesor.der != null) {
+				predecesor = predecesor.der;
+			}
+			return predecesor;
+		}
+
+		// si no tiene subárbol izquierdo
+		// Buscar hacia arriba el primer padre menor que nodoActual
+		Nodo<K,V> padre = encNodoPadre(this.raiz, nodoActual.clave);
+		while (padre != null && padre.clave.compareTo(nodoActual.clave) > 0) {
+			padre = encNodoPadre(this.raiz, padre.clave);
+		}
+		return padre;
+	}
 	//metodos que buscan el maximo y el minimo, agregado por practicidad y aparte son O(h) y no O(n)
 	private Nodo<K, V> obtenerMinimo(Nodo<K, V> nodo) {
 		if (nodo == null) {
@@ -402,7 +464,7 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 	}
 
 
-
+	
 
 
 

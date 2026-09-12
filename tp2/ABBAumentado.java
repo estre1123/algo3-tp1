@@ -74,6 +74,129 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 	//falta eliminar, pero eso despues hago
 
 
+
+	public V eliminar(K clave) throws ClaveInexistenteException, ClaveNulaException {
+    // Verificar que la clave no sea nula
+    if (clave == null) {
+        throw new ClaveNulaException("La clave no puede ser nula.");
+    }
+    // Buscar el nodo que queremos eliminar
+    Nodo<K, V> nodoElim = encNodo(this.raiz, clave);
+
+    // Si no existe
+    if (nodoElim == null) {
+        throw new ClaveInexistenteException("La clave no existe.");
+    }
+    // Guarda el valor que vamos a  devolver
+    V valorEliminado = nodoElim.valor;
+	//si tiene dos hijos
+    if (nodoElim.izq != null && nodoElim.der != null) {
+        // Buscar el sucesor (el menor nodo del subarbol derecho)
+        Nodo<K, V> sucesor = nodoElim.der;
+        while (sucesor.izq != null) {
+            sucesor = sucesor.izq;
+        }
+        // copiar los datos del sucesor al nodo que queremos eliminar
+        nodoElim.clave = sucesor.clave;
+        nodoElim.valor = sucesor.valor;
+        // Ahora eliminamos fIsicamente el sucesor.
+        // El sucesor NO puede tener hijo izquierdo.
+        Nodo<K, V> padreSucesor = encNodoPadre(this.raiz, sucesor.clave);
+        if (padreSucesor == null) {
+            // Esto practicamente solo podrIa pasar si el sucesor,fuera la raIz, pero en este caso no deberIa ocurrir.
+            this.raiz = sucesor.der;
+        } else {
+            if (padreSucesor.izq == sucesor) {
+				//no se pone directamente null, porque puede tener hijo derecho
+                padreSucesor.izq = sucesor.der;
+            } else {
+
+                padreSucesor.der = sucesor.der;
+            }
+            // Actualizamos tamanos desde el padre del sucesor hacia arriba
+            Nodo<K, V> actual = padreSucesor;
+            while (actual != null) {
+                actual.tamano =
+                        1
+                        + obtenerTamano(actual.izq)
+                        + obtenerTamano(actual.der);
+                actual = encNodoPadre(this.raiz, actual.clave);
+            }
+        }
+
+        return valorEliminado;
+    }
+	// si no tiene hijo o tiene 1 hijo 
+    Nodo<K, V> hijo;
+
+    if (nodoElim.izq != null) {
+        hijo = nodoElim.izq;
+    } else {
+        hijo = nodoElim.der;
+    }
+	//si elimina la raiz
+    if (nodoElim == this.raiz) {
+        this.raiz = hijo;
+        return valorEliminado;
+    }
+	//si no es raiz
+    Nodo<K, V> nodoPadre = encNodoPadre(this.raiz, clave);
+
+    if (nodoPadre.izq == nodoElim) {
+        nodoPadre.izq = hijo;
+    } else {
+        nodoPadre.der = hijo;
+    }
+    // Actualizar tamano
+    Nodo<K, V> actual = nodoPadre;
+    while (actual != null) {
+        actual.tamano =
+                1
+                + obtenerTamano(actual.izq)
+                + obtenerTamano(actual.der);
+
+        actual = encNodoPadre(this.raiz, actual.clave);
+    }
+    return valorEliminado;
+}
+	public Nodo<K,V> encNodo(Nodo<K, V> nodo, K clave) {
+		if(nodo==null){
+			return null;
+		}
+		if (clave.compareTo(nodo.clave)<0){
+			if (nodo.izq != null && clave.compareTo(nodo.izq.clave) == 0) {
+            	return nodo;
+        	}
+			return encNodo(nodo.izq, clave);
+		}else if( clave.compareTo(nodo.clave)>0){
+			if(nodo.der!=null && clave.compareTo(nodo.der.clave)==0){
+				return nodo;
+			}
+			return encNodo(nodo.der,clave);
+		}else{
+			return null;
+		}
+	}
+	
+	public Nodo<K, V> encNodoPadre(Nodo<K, V> nodo, K clave) {
+    if (nodo == null) {
+        return null;
+    }
+    if (clave.compareTo(nodo.clave) < 0) {
+        if (nodo.izq != null && clave.compareTo(nodo.izq.clave) == 0) {
+            return nodo;
+        }
+        return encNodoPadre(nodo.izq, clave);
+    } else if (clave.compareTo(nodo.clave) > 0) {
+        if (nodo.der != null && clave.compareTo(nodo.der.clave) == 0) {
+            return nodo;
+        }
+        return encNodoPadre(nodo.der, clave);
+    } else {
+        return null;
+    }
+}
+
 	//metodo de obtener la clave, se compone de uno sencillo (para el user), y de otro recursivo, que es el que realmente hace el trabajo, lo mismisimo que el metodo de agregar
 	public V obtener(K clave) throws ClaveNulaException {
 		if (clave == null) {

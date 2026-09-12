@@ -1,5 +1,5 @@
 //K extiende comparable porque necesitamos que pueda ser comparado
-//FALTAN ELIMINAR, TAMANOSCONSISTENTES, EL ITERATOR, Y EL TOSTRING, EL RESTO VERIFICAR
+//FALTAN, TAMANOSCONSISTENTES, EL ITERATOR, Y EL TOSTRING, EL RESTO VERIFICAR
 public class ABBAumentado <K extends Comparable<? super K>, V> {
 	private Nodo<K, V> raiz;
 	private long visitas;
@@ -10,8 +10,6 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		//Info del nodo, K es de key, la clave usada para comparar, la V es de value, es la info asociada al nodo
 		K clave;
 		V valor;
-		//Padre, el pdf no menciona asi que de momento no se usa
-		Nodo<K, V> padre;
 		//Hijos
 		Nodo<K, V> izq;
 		Nodo<K, V> der;
@@ -24,7 +22,6 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 			this.valor = valor;
 			this.izq = null;
 			this.der = null;
-			this.padre = null;
 			//el tamano indica cuantos nodos hay en el subarbol que tiene como raiz este nodo, y como es un nodo hoja, el inicial es 1
 			this.tamano = 1;
 		}
@@ -77,85 +74,102 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		if (clave == null) {
 			throw new ClaveNulaException("La clave no puede ser nula.");
 		}
-		// Buscar el nodo que queremos eliminar
-		Nodo<K, V> nodoElim = encNodo(this.raiz, clave);
 
-		// Si no existe
-		if (nodoElim == null) {
-			throw new ClaveInexistenteException("La clave no existe.");
+		return eliminarRec(this.raiz, null, clave);
+	}
+
+	private V eliminarRec(Nodo<K, V> nodo, Nodo<K, V> nodoPadre,  K clave) throws ClaveInexistenteException {
+		if (nodo == null) {
+			throw new ClaveInexistenteException("La clave " + clave + " no existe en el árbol.");
 		}
-		// Guarda el valor que vamos a  devolver
-		V valorEliminado = nodoElim.valor;
-		//si tiene dos hijos
-		if (nodoElim.izq != null && nodoElim.der != null) {
-			// Buscar el sucesor (el menor nodo del subarbol derecho)
-			Nodo<K, V> sucesor = nodoElim.der;
-			while (sucesor.izq != null) {
-				sucesor = sucesor.izq;
-			}
-			// copiar los datos del sucesor al nodo que queremos eliminar
-			nodoElim.clave = sucesor.clave;
-			nodoElim.valor = sucesor.valor;
-			// Ahora eliminamos fIsicamente el sucesor.
-			// El sucesor NO puede tener hijo izquierdo.
-			Nodo<K, V> padreSucesor = encNodoPadre(this.raiz, sucesor.clave);
-			if (padreSucesor == null) {
-				// Esto practicamente solo podrIa pasar si el sucesor,fuera la raIz, pero en este caso no deberIa ocurrir.
-				this.raiz = sucesor.der;
-			} else {
-				if (padreSucesor.izq == sucesor) {
-					//no se pone directamente null, porque puede tener hijo derecho
-					padreSucesor.izq = sucesor.der;
+		this.visitas++;
+		//viajamos por el arbol hasta que el nodo actual sea el que queremos eliminar, y vamos guardando el padre para poder actualizar el tamaño del subarbol
+		if (clave.compareTo(nodo.clave) < 0) {
+			V valor = eliminarRec(nodo.izq, nodo, clave);
+			nodo.tamano = 1 + obtenerTamano(nodo.izq) + obtenerTamano(nodo.der); //actualizamos el tamaño del nodo
+			return valor;
+		} else if (clave.compareTo(nodo.clave) > 0) {
+			V valor = eliminarRec(nodo.der, nodo, clave);
+			nodo.tamano = 1 + obtenerTamano(nodo.izq) + obtenerTamano(nodo.der); //actualizamos el tamaño del nodo
+			return valor;
+		}
+
+		//caso 1: el nodo a elimnar es una hoja, simplemente lo derreferenciamos del padre, y actualizamos el tamaño del padre
+		if (nodo.izq == null && nodo.der == null) {
+			if (nodoPadre != null) {
+				if (nodoPadre.izq == nodo) {
+					nodoPadre.izq = null;
 				} else {
-
-					padreSucesor.der = sucesor.der;
+					nodoPadre.der = null;
 				}
-				// Actualizamos tamanos desde el padre del sucesor hacia arriba
-				Nodo<K, V> actual = padreSucesor;
-				while (actual != null) {
-					actual.tamano =
-							1
-							+ obtenerTamano(actual.izq)
-							+ obtenerTamano(actual.der);
-					actual = encNodoPadre(this.raiz, actual.clave);
-				}
+				nodoPadre.tamano = 1 + obtenerTamano(nodoPadre.izq) + obtenerTamano(nodoPadre.der);
+			} else {
+				this.raiz = null; //si el nodo a eliminar es la raiz, simplemente la hacemos null
 			}
-
-			return valorEliminado;
+			return nodo.valor;
 		}
-		// si no tiene hijo o tiene 1 hijo
-		Nodo<K, V> hijo;
 
-		if (nodoElim.izq != null) {
-			hijo = nodoElim.izq;
+		//caso 2: el nodo tiene un solo hijo, se reemplaza la referencia al nodo por la referencia a su hijo, y se actualiza el tamaño del padre
+		if (nodo.izq == null || nodo.der == null) {
+			Nodo<K, V> hijo = (nodo.izq != null) ? nodo.izq : nodo.der;
+			if (nodoPadre != null) { //verificamos que no sea la primera llamada que dimos
+				if (nodoPadre.izq == nodo) {
+					nodoPadre.izq = hijo;
+				} else {
+					nodoPadre.der = hijo;
+				}
+				nodoPadre.tamano = 1 + obtenerTamano(nodoPadre.izq) + obtenerTamano(nodoPadre.der);
+			} else {
+				this.raiz = hijo; //si el nodo a eliminar es la raiz, simplemente la reemplazamos por su hijo
+			}
+			return nodo.valor;
+		}
+
+		//caso 3: el nodo tiene dos hijos, entonces buscamos el sucesor inorden (el nodo mas a la izquierda del subarbol derecho), copiamos su clave y valor al nodo a eliminar, y luego eliminamos el sucesor inorden (que ahora tiene como clave la del nodo a eliminar)
+
+		V valorARetornar = nodo.valor; //guardamos el valor del nodo a eliminar para retornarlo al final
+		Nodo<K, V> sucesor = extraerSucesorYActualizar(nodo, nodo.der); //buscamos el sucesor inorden y lo desconectamos de su padre, actualizando los tamanos intermedios
+
+		sucesor.izq = nodo.izq; //el hijo izquierdo del nodo a eliminar pasa a ser el hijo izquierdo del sucesor inorden
+		sucesor.der = nodo.der; //el hijo derecho del nodo a eliminar pasa a ser el hijo derecho del sucesor inorden
+
+		if (nodoPadre == null) {
+			this.raiz = sucesor; //si el nodo a eliminar es la raiz, simplemente reemplazamos la raiz por el sucesor inorden
+		} else if (nodoPadre.izq == nodo) {
+			nodoPadre.izq = sucesor; //si el nodo a eliminar es hijo izquierdo de su padre, reemplazamos la referencia del padre por el sucesor inorden
 		} else {
-			hijo = nodoElim.der;
+			nodoPadre.der = sucesor; //si el nodo a eliminar es hijo derecho de su padre, reemplazamos la referencia del padre por el sucesor inorden
 		}
-		//si elimina la raiz
-		if (nodoElim == this.raiz) {
-			this.raiz = hijo;
-			return valorEliminado;
-		}
-		//si no es raiz
-		Nodo<K, V> nodoPadre = encNodoPadre(this.raiz, clave);
 
-		if (nodoPadre.izq == nodoElim) {
-			nodoPadre.izq = hijo;
-		} else {
-			nodoPadre.der = hijo;
-		}
-		// Actualizar tamano
-		Nodo<K, V> actual = nodoPadre;
-		while (actual != null) {
-			actual.tamano =
-					1
-					+ obtenerTamano(actual.izq)
-					+ obtenerTamano(actual.der);
+		sucesor.tamano = 1 + obtenerTamano(sucesor.izq) + obtenerTamano(sucesor.der); //actualizamos el tamaño del sucesor inorden, que ahora es el nodo que reemplaza al nodo a eliminar
 
-			actual = encNodoPadre(this.raiz, actual.clave);
+		//mandamos a elminar el sucesor inorden ya que este lo "intercambiamos" con el nodo a eliminar original, y como el sucesor inorden es el nodo mas a la izquierda del subarbol derecho, este no puede tener hijo izquierdo, por lo que cae en el caso 1 o 2, y se elimina correctamente
+		return valorARetornar;
+	}
+
+	private Nodo<K, V> extraerSucesorYActualizar(Nodo<K, V> padre, Nodo<K, V> actual) {
+		// Caso base: el nodo actual no tiene hijo izq, osea es el sucesor
+		if (actual.izq == null) {
+			// desvinculamos el sucesor de su padre
+			// si bajamos por la izq, el padre lo tiene en su puntero izq, si no, lo tiene en el derecho
+			if (padre.izq == actual) {
+				padre.izq = actual.der;
+			} else {
+				padre.der = actual.der;
+			}
+			return actual; // Devolvemos el nodo sucesor intacto
 		}
-		return valorEliminado;
-}
+		this.visitas++; //incrementamos las visitas, ya que estamos bajando en el arbol
+
+		// bajamos por la izq y actualizamos los tamanos intermedios
+		Nodo<K, V> sucesor = extraerSucesorYActualizar(actual, actual.izq);
+
+		// al volver de la llamada, actualizamos el tamaño de este nodo intermedio
+		actual.tamano = 1 + obtenerTamano(actual.izq) + obtenerTamano(actual.der);
+
+		return sucesor;
+	}
+
 	public Nodo<K,V> encNodo(Nodo<K, V> nodo, K clave) {
 		if(nodo==null){
 			return null;
@@ -179,6 +193,7 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
     if (nodo == null) {
         return null;
     }
+	this.visitas++;
     if (clave.compareTo(nodo.clave) < 0) {
         if (nodo.izq != null && clave.compareTo(nodo.izq.clave) == 0) {
             return nodo;
@@ -464,7 +479,7 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 	}
 
 
-	
+
 
 
 

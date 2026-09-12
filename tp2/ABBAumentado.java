@@ -1,5 +1,5 @@
 //K extiende comparable porque necesitamos que pueda ser comparado
-//FALTAN, TAMANOSCONSISTENTES, EL ITERATOR, Y EL TOSTRING, EL RESTO VERIFICAR
+//FALTAN, , EL ITERATOR, Y EL TOSTRING, EL RESTO VERIFICAR
 public class ABBAumentado <K extends Comparable<? super K>, V> {
 	private Nodo<K, V> raiz;
 	private long visitas;
@@ -170,6 +170,7 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		return sucesor;
 	}
 
+	/*dejo fuera pq tienen bugs
 	public Nodo<K,V> encNodo(Nodo<K, V> nodo, K clave) {
 		if(nodo==null){
 			return null;
@@ -208,6 +209,7 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
         return null;
     }
 }
+ */
 
 	//metodo de obtener la clave, se compone de uno sencillo (para el user), y de otro recursivo, que es el que realmente hace el trabajo, lo mismisimo que el metodo de agregar
 	public V obtener(K clave) throws ClaveNulaException {
@@ -366,72 +368,69 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 
 	}
 	//sucesor
-	public K sucesor(K clave) throws ClaveInexistenteException{
-		Nodo<K,V> nodo = encNodo(this.raiz, clave);
-		if (nodo == null) {
+	public K sucesor(K clave) throws ClaveInexistenteException, ClaveNulaException {
+		if (clave == null) {
+			throw new ClaveNulaException("La clave no puede ser nula.");
+		}
+		if (!this.contiene(clave)) {
 			throw new ClaveInexistenteException("La clave no existe.");
 		}
-		Nodo<K,V> sucesor = encSucesorInorden(this.raiz, clave);
-		if (sucesor == null) {
+		return sucesorRec(this.raiz, null, clave);
+	}
+
+	private K sucesorRec(Nodo<K,V> nodo, Nodo<K,V> padre, K clave) {
+		if (nodo == null) {
 			return null;
 		}
-		return sucesor.clave;
-	}
-	private Nodo<K,V> encSucesorInorden(Nodo<K,V> nodo,K clave){
-		// Encontrar el nodo que contiene la clave
-		Nodo<K,V> nodoActual = encNodo(nodo, clave);
-		// si tiene subárbol derecho
-		if (nodoActual.der != null) {
-			Nodo<K,V> sucesor = nodoActual.der;
-			// Buscamos el menor del subárbol derecho
-			while (sucesor.izq != null) {
-				sucesor = sucesor.izq;
+		this.visitas++;
+		//comparacion de la clave con el nodo actual, hecho aparte para evitar escribir mil veces el compareTo, y para que sea mas facil de leer
+		int cmp = clave.compareTo(nodo.clave);
+		if (cmp < 0) { //si la clave es menor que la del nodo actual, es candidato a sucesor
+			return sucesorRec(nodo.izq, nodo, clave);
+		} else if (cmp > 0) {
+			//pasamos el padre para que si encontramos el nodo, podamos ver si tiene hijo derecho o no, y si no tiene, el sucesor es el primer ancestro que sea mayor que el nodo
+			return sucesorRec(nodo.der, padre, clave);
+		} else { //encontre el nodo
+			if (nodo.der != null) { //si tiene hijo derecho, el sucesor es el minimo del subarbol derecho
+				return obtenerMinimo(nodo.der).clave;
+			} else { //si no tiene hijo derecho, el sucesor es el primer ancestro que sea mayor que el nodo, o sea, el ultimo padre que pasamos por el camino que sea mayor que el nodo, y si no hay ninguno, es null
+				return (padre != null && padre.clave.compareTo(nodo.clave) > 0) ? padre.clave : null;
 			}
-			return sucesor;
 		}
 
-		// si no tiene subárbol derecho
-		// Buscar hacia arriba el primer padre mayor que nodoActual
-		Nodo<K,V> padre = encNodoPadre(this.raiz, nodoActual.clave);
-		while (padre != null && padre.clave.compareTo(nodoActual.clave) < 0) {
-			padre = encNodoPadre(this.raiz, padre.clave);
-		}
-		return padre;
 	}
 
-	//predecesor
-	public K predecesor(K clave) throws ClaveInexistenteException{
-		Nodo<K,V> nodo = encNodo(this.raiz, clave);
-		if (nodo == null) {
+
+	//predecesor, es simetrico a sucesor, pero en vez de ir a la derecha, vamos a la izquierda, y en vez de buscar el minimo, buscamos el maximo
+	public K predecesor(K clave) throws ClaveInexistenteException, ClaveNulaException{
+		if (clave == null) {
+			throw new ClaveNulaException("La clave no puede ser nula.");
+		}
+		if (!this.contiene(clave)) {
 			throw new ClaveInexistenteException("La clave no existe.");
 		}
-		Nodo<K,V> predecesor = encPredecesor(this.raiz, clave);
-		if (predecesor == null) {
+		return predecesorRec(this.raiz, null, clave);
+	}
+
+	private K predecesorRec(Nodo<K,V> nodo, Nodo<K,V> padre, K clave) {
+		if (nodo == null) {
 			return null;
 		}
-		return predecesor.clave;
-	}
-	private Nodo<K,V> encPredecesor(Nodo<K,V> nodo,K clave){
-		// Encontrar el nodo que contiene la clave
-		Nodo<K,V> nodoActual = encNodo(nodo, clave);
-		// si tiene subárbol izqueirdo
-		if (nodoActual.izq != null) {
-			Nodo<K,V> predecesor = nodoActual.izq;
-			// Buscamos el mayor del subárbol izquierdo
-			while (predecesor.der != null) {
-				predecesor = predecesor.der;
+		this.visitas++;
+		int cmp = clave.compareTo(nodo.clave);
+		if (cmp < 0) {
+			return predecesorRec(nodo.izq, padre, clave);
+		} else if (cmp > 0) {
+			return predecesorRec(nodo.der, nodo, clave);
+		} else {
+			if (nodo.izq != null) {
+				return obtenerMaximo(nodo.izq).clave;
+			} else {
+				return (padre != null && padre.clave.compareTo(nodo.clave) < 0) ? padre.clave : null;
 			}
-			return predecesor;
 		}
-
-		// si no tiene subárbol izquierdo
-		// Buscar hacia arriba el primer padre menor que nodoActual
-		Nodo<K,V> padre = encNodoPadre(this.raiz, nodoActual.clave);
-		while (padre != null && padre.clave.compareTo(nodoActual.clave) > 0) {
-			padre = encNodoPadre(this.raiz, padre.clave);
-		}
-		return padre;
 	}
+
 	//metodos que buscan el maximo y el minimo, agregado por practicidad y aparte son O(h) y no O(n)
 	private Nodo<K, V> obtenerMinimo(Nodo<K, V> nodo) {
 		if (nodo == null) {
@@ -464,7 +463,6 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		if (nodo == null) {
 			return -1; //altura de un arbol vacio es -1, altura de un arbol con un solo nodo es 0
 		}
-		this.visitas++;
 		int alturaIzq = alturaRec(nodo.izq);
 		int alturaDer = alturaRec(nodo.der);
 		return Math.max(alturaIzq, alturaDer) + 1;
@@ -476,6 +474,21 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 
 	public void reiniciarVisitas() {
 		this.visitas = 0;
+	}
+
+	public boolean tamanosConsistentes() {
+		return tamanosConsistentesRec(this.raiz);
+	}
+
+	private boolean tamanosConsistentesRec(Nodo<K, V> nodo) {
+		if (nodo == null) {
+			return true;
+		}
+		int tamanoCalculado = 1 + obtenerTamano(nodo.izq) + obtenerTamano(nodo.der);
+		if (nodo.tamano != tamanoCalculado) {
+			return false;
+		}
+		return tamanosConsistentesRec(nodo.izq) && tamanosConsistentesRec(nodo.der);
 	}
 
 

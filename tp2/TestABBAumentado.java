@@ -21,6 +21,7 @@ public class TestABBAumentado {
 		abba.reiniciarVisitas();
 		System.out.println("Cnsultar rango ingenuo: " + abba.consultarRangoIngenuo(35, 65));
 		System.out.println("Visitas totales: " + abba.visitas());
+		System.out.println("eliminar(30) => " + abba.eliminar(30));
 
 
 

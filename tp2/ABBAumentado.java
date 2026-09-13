@@ -491,9 +491,23 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		return tamanosConsistentesRec(nodo.izq) && tamanosConsistentesRec(nodo.der);
 	}
 
+	@Override
+	public String toString() {
+		return toStringRec(this.raiz);
+	}
+	private String toStringRec(Nodo<K, V> nodo) {
+		if (nodo == null) {
+			return "";
+		}
+		String resultado = "";
+		resultado += toStringRec(nodo.izq);
+		resultado += nodo.clave + ": " + nodo.valor + "\n";
+		resultado += toStringRec(nodo.der);
+		return resultado;
+	}
 
 
-
+	
 
 
 

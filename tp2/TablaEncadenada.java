@@ -1,0 +1,123 @@
+public class TablaEncadenada<K,E> {
+    private class Entrada<K,E>{
+        K clave;
+        E datos;
+        Entrada<K,E> siguiente;
+    }
+    private Entrada<K,E>[] tabla;
+    private static final int TAM_INICIAL=11;
+    private double amax=1;
+    private int m=TAM_INICIAL;
+    private int n=0;
+    private int sondas=0;
+    @SuppressWarnings("unchecked")
+    public TablaEncadenada() {
+        tabla = (Entrada<K,E>[]) new Entrada[m];
+        n = 0;
+    }
+    @SuppressWarnings("unchecked")
+    public TablaEncadenada(int m, double alfaMax) {
+        this.m = m;
+        this.amax = alfaMax;
+        this.tabla = (Entrada<K,E>[]) new Entrada[m];
+        this.n = 0;
+    }
+    private int h(K clave){
+        return (clave.hashCode()&0x7fffffff)%this.m;
+    }
+    public void insertar(K clave,E datos){
+        int posicion=h(clave);
+        Entrada<K,E> actual=tabla[posicion];
+        while(actual!=null){
+            this.sondas++;
+            if (actual.clave.equals(clave)) {
+                actual.datos = datos;
+                return;
+            }
+        actual = actual.siguiente;
+        }
+        Entrada<K,E> nueva = new Entrada();
+        nueva.clave = clave;
+        nueva.datos = datos;
+        nueva.siguiente = tabla[posicion];
+        tabla[posicion] = nueva;
+        this.n++;
+        if ((double) n / m > this.amax) {
+            rehash();
+        }
+    }
+    @SuppressWarnings("unchecked")
+    private void rehash() {
+        Entrada<K,E>[] tablaAnterior = tabla;
+        m = m * 2;
+        tabla = (Entrada<K,E>[]) new Entrada[m];
+        for (int i = 0; i < tablaAnterior.length; i++) {
+            Entrada<K,E> actual = tablaAnterior[i];
+            while (actual != null) {
+                Entrada<K,E> siguiente = actual.siguiente;
+                int posicion = h(actual.clave);
+                actual.siguiente = tabla[posicion];
+                tabla[posicion] = actual;
+                actual = siguiente;
+            }
+        }
+    }
+    public E obtener (K clave){
+        int posicion=h(clave);
+        Entrada<K,E> actual=tabla[posicion];
+        while(actual!=null){
+            this.sondas++;
+            if(actual.clave.equals(clave)){
+                return actual.datos;
+            }
+            actual=actual.siguiente;
+        }
+        return null;
+    }
+    public E eliminar(K clave) {
+        int posicion = h(clave);
+        Entrada<K,E> actual = tabla[posicion];
+        Entrada<K,E> anterior = null;
+        while (actual != null) {
+            this.sondas++;
+            if (actual.clave.equals(clave)) {
+                if (anterior == null) {
+                    tabla[posicion] = actual.siguiente;
+                } else {
+                    anterior.siguiente = actual.siguiente;
+                }
+                n--;
+                return actual.datos;
+            }
+            anterior = actual;
+            actual = actual.siguiente;
+        }
+        return null;
+    }
+    public int capacidad(){
+        return m;
+    }
+    public int size(){
+        return n;
+    }
+    public double factorCarga(){
+        return (double) n/m;
+    }
+    public int sonadas(){
+        return this.sondas;
+    }
+    public void reiniciarSondas(){
+        this.sondas=0;
+    }
+    public void dump() {
+    for (int i = 0; i < tabla.length; i++) {
+        System.out.print(i + ": ");
+        Entrada<K,E> actual = tabla[i];
+        while (actual != null) {
+            System.out.print(actual.clave + " ");
+            actual = actual.siguiente;
+        }
+        System.out.println();
+    }
+}
+}

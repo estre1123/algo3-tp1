@@ -241,6 +241,25 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		return nodo.tamano;
 	}
 
+	Nodo<K, V> nodoDe(K clave) throws ClaveNulaException{
+		if (clave == null) {
+			throw new ClaveNulaException("La clave no puede ser nula.");
+		}
+		Nodo<K, V> actual = this.raiz;
+		while (actual != null) {
+			this.visitas++;
+			int cmp = clave.compareTo(actual.clave);
+			if (cmp < 0) {
+				actual = actual.izq;
+			} else if (cmp > 0) {
+				actual = actual.der;
+			} else {
+				return actual;
+			}
+		}
+		return null;
+	}
+
 	public boolean contiene(K clave) throws ClaveNulaException {
 		if (clave == null) {
 			throw new ClaveNulaException("La clave no puede ser nula.");
@@ -506,6 +525,28 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		return resultado;
 	}
 
+	/**@Override
+	public String toString() {
+		StringBuilder resultado = new StringBuilder();
+		toStringRec(this.raiz, resultado);
+		if (resultado.length() > 0) {
+			resultado.setLength(resultado.length() - 1);
+		}
+		return resultado.toString();
+	}
+	private void toStringRec(
+			Nodo<K, V> nodo,
+			StringBuilder resultado) {
+		if (nodo == null) {
+			return;
+		}
+		toStringRec(nodo.izq, resultado);
+		resultado.append(nodo.clave);
+		resultado.append("(");
+		resultado.append(nodo.tamano);
+		resultado.append(") ");
+		toStringRec(nodo.der, resultado);
+	}**/
 
 	
 

@@ -49,16 +49,16 @@ public class TablaEncadenada<K,E> {
     @SuppressWarnings("unchecked")
     private void rehash() {
         Entrada<K,E>[] tablaAnterior = tabla;
-        m = m * 2;
+        m=m*2;
         tabla = (Entrada<K,E>[]) new Entrada[m];
-        for (int i = 0; i < tablaAnterior.length; i++) {
-            Entrada<K,E> actual = tablaAnterior[i];
-            while (actual != null) {
-                Entrada<K,E> siguiente = actual.siguiente;
-                int posicion = h(actual.clave);
-                actual.siguiente = tabla[posicion];
-                tabla[posicion] = actual;
-                actual = siguiente;
+        for (int i=0;i<tablaAnterior.length; i++) {
+            Entrada<K,E> actual=tablaAnterior[i];
+            while (actual!=null) {
+                Entrada<K,E> siguiente=actual.siguiente;
+                int posicion=h(actual.clave);
+                actual.siguiente=tabla[posicion];
+                tabla[posicion]=actual;
+                actual=siguiente;
             }
         }
     }
@@ -103,21 +103,22 @@ public class TablaEncadenada<K,E> {
     public double factorCarga(){
         return (double) n/m;
     }
-    public int sonadas(){
+    public int sondas(){
         return this.sondas;
     }
     public void reiniciarSondas(){
         this.sondas=0;
     }
     public void dump() {
-    for (int i = 0; i < tabla.length; i++) {
-        System.out.print(i + ": ");
-        Entrada<K,E> actual = tabla[i];
-        while (actual != null) {
-            System.out.print(actual.clave + " ");
-            actual = actual.siguiente;
+        for (int i = 0; i < tabla.length; i++) {
+            System.out.print(i + ": ");
+            Entrada<K,E> actual = tabla[i];
+            while (actual != null) {
+                System.out.print(actual.clave + " ");
+                actual = actual.siguiente;
+            }
+            System.out.println();
         }
-        System.out.println();
     }
-}
+
 }

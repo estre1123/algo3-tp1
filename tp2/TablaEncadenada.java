@@ -1,4 +1,5 @@
 public class TablaEncadenada<K,E> {
+
     private class Entrada<K,E>{
         K clave;
         E datos;
@@ -10,6 +11,7 @@ public class TablaEncadenada<K,E> {
     private int m=TAM_INICIAL;
     private int n=0;
     private int sondas=0;
+
     @SuppressWarnings("unchecked")
     public TablaEncadenada() {
         tabla = (Entrada<K,E>[]) new Entrada[m];
@@ -22,9 +24,12 @@ public class TablaEncadenada<K,E> {
         this.tabla = (Entrada<K,E>[]) new Entrada[m];
         this.n = 0;
     }
+
+
     private int h(K clave){
-        return (clave.hashCode()&0x7fffffff)%this.m;
+        return (clave.hashCode() & 0x7fffffff) % this.m;
     }
+
     public void insertar(K clave,E datos){
         int posicion=h(clave);
         Entrada<K,E> actual=tabla[posicion];
@@ -36,12 +41,14 @@ public class TablaEncadenada<K,E> {
             }
         actual = actual.siguiente;
         }
-        Entrada<K,E> nueva = new Entrada();
+
+        Entrada<K,E> nueva = new Entrada<>();
         nueva.clave = clave;
         nueva.datos = datos;
         nueva.siguiente = tabla[posicion];
         tabla[posicion] = nueva;
-        this.n++;
+
+		this.n++;
         if ((double) n / m > this.amax) {
             rehash();
         }
@@ -49,7 +56,7 @@ public class TablaEncadenada<K,E> {
     @SuppressWarnings("unchecked")
     private void rehash() {
         Entrada<K,E>[] tablaAnterior = tabla;
-        m=m*2;
+        this.m = this.m * 2;
         tabla = (Entrada<K,E>[]) new Entrada[m];
         for (int i=0;i<tablaAnterior.length; i++) {
             Entrada<K,E> actual=tablaAnterior[i];
@@ -81,6 +88,7 @@ public class TablaEncadenada<K,E> {
         while (actual != null) {
             this.sondas++;
             if (actual.clave.equals(clave)) {
+				//si el nodo a eliminar es el primero de la lista, actual.siguiente es el siguiente nodo, y lo asignamos a tabla[posicion], si no es el primero, entonces anterior.siguiente apunta al siguiente nodo de actual, eliminando actual de la lista
                 if (anterior == null) {
                     tabla[posicion] = actual.siguiente;
                 } else {

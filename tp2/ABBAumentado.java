@@ -1,6 +1,9 @@
 //K extiende comparable porque necesitamos que pueda ser comparado
-//FALTAN, , EL ITERATOR, Y EL TOSTRING, EL RESTO VERIFICAR
-public class ABBAumentado <K extends Comparable<? super K>, V> {
+//FALTAN, , EL ITERATOR,, EL RESTO VERIFICAR
+
+import java.util.Iterator;
+
+public class ABBAumentado <K extends Comparable<? super K>, V> implements Iterable<K> {
 	private Nodo<K, V> raiz;
 	private long visitas;
 
@@ -510,45 +513,77 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		return tamanosConsistentesRec(nodo.izq) && tamanosConsistentesRec(nodo.der);
 	}
 
+	//creamos una estructura de nodo propio para usar una pila para el iterator..
+	private static class NodoPila<K, V> {
+		Nodo<K, V> dato;
+		NodoPila<K, V> siguiente;
+
+		public NodoPila(Nodo<K, V> dato) {
+			this.dato = dato;
+			this.siguiente = null;
+		}
+	}
+
+	//la solucion con una pila auxiliar la vi en el canal de "take U Forward", el video se llama L50. Binary Search Tree Iterator | BST | O(H) Space, explica la logica detras de este recorrido, igual es algo diferente pero la idea de apilar los nodos de la izq para luegor ir sacando y apilando los de la derecha es de ahi, y es la logica que usamos para el iterator, que devuelve las claves en orden ascendente, o sea, inorden del arbol
+	@Override
+	public Iterator<K> iterator() {
+
+		return new Iterator<K>() {
+			private NodoPila<K, V> pila = null;
+
+			{
+				apilarIzquierda(raiz);
+			}
+			//vamos apilando los nodos de la izquierda, y cuando no hay mas, vamos sacando de la pila y apilando los de la derecha, asi emulamos el recorrido inorden del arbol, y el iterador devuelve las claves en ordenn
+			private void apilarIzquierda(Nodo<K, V> nodo) {
+				while (nodo != null) {
+					NodoPila<K, V> nuevoNodo = new NodoPila<>(nodo);
+					nuevoNodo.siguiente = pila;
+					pila = nuevoNodo;
+					nodo = nodo.izq;
+				}
+			}
+			//hasNext() devuelve true si hay mas elementos en el iterador, o sea, si la pila no esta vacia
+			@Override
+			public boolean hasNext() {
+				return pila != null;
+			}
+
+			@Override
+			public K next() {
+				if (!hasNext()) {
+					throw new java.util.NoSuchElementException();
+				}
+				//esto es lo mismo que desapilar, pero lo hacemos en una linea para no tener que crear una variable temporal, y ademas apilamos los nodos de la derecha del nodo que acabamos de sacar, para seguir el recorrido inorden
+				Nodo<K, V> nodoActual = pila.dato;
+				pila = pila.siguiente;
+				apilarIzquierda(nodoActual.der);
+				return nodoActual.clave;
+			}
+		};
+	}
+
 	@Override
 	public String toString() {
 		return toStringRec(this.raiz);
 	}
+	//no se usa el iterator para el toString porque queremos mostrar el tamaño de cada nodo, y el iterator solo devuelve las claves, ademas de que el toString recorre el arbol en orden inorden, y el iterator tambien, pero no nos sirve para mostrar los tamanos
 	private String toStringRec(Nodo<K, V> nodo) {
 		if (nodo == null) {
 			return "";
 		}
-		String resultado = "";
-		resultado += toStringRec(nodo.izq);
-		resultado += nodo.clave + ": " + nodo.valor + "\n";
-		resultado += toStringRec(nodo.der);
-		return resultado;
-	}
-
-	/**@Override
-	public String toString() {
 		StringBuilder resultado = new StringBuilder();
-		toStringRec(this.raiz, resultado);
-		if (resultado.length() > 0) {
-			resultado.setLength(resultado.length() - 1);
-		}
-		return resultado.toString();
-	}
-	private void toStringRec(
-			Nodo<K, V> nodo,
-			StringBuilder resultado) {
-		if (nodo == null) {
-			return;
-		}
-		toStringRec(nodo.izq, resultado);
+		resultado.append(toStringRec(nodo.izq));
 		resultado.append(nodo.clave);
 		resultado.append("(");
 		resultado.append(nodo.tamano);
 		resultado.append(") ");
-		toStringRec(nodo.der, resultado);
-	}**/
+		resultado.append(toStringRec(nodo.der));
+		return resultado.toString();
+	}
 
-	
+
+
 
 
 

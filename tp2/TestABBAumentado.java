@@ -10,7 +10,7 @@ public class TestABBAumentado {
 		abba.agregar(80, "P" + 80);
 		abba.agregar(35, "P" + 35);
 		abba.agregar(65, "P" + 65);
-
+		System.out.println(abba);
 		abba.reiniciarVisitas();
 		System.out.println("kEsimo(6) => " + abba.kEsimo(6));
 		System.out.println("Visitas totales: " + abba.visitas());
@@ -33,8 +33,8 @@ public class TestABBAumentado {
 		System.out.println("Tamaños consistentes? => " + abba.tamanosConsistentes());
 
 		System.out.println("Contiene 30? => " + abba.contiene(30));
-
-
+		System.out.println("altura => " + abba.altura());
+		System.out.println(abba);
 
 
 	}

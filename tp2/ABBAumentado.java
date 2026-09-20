@@ -501,13 +501,13 @@ public class ABBAumentado <K extends Comparable<? super K>, V> {
 		}
 		String resultado = "";
 		resultado += toStringRec(nodo.izq);
-		resultado += nodo.clave + ": " + nodo.valor + "\n";
+		resultado += nodo.clave + "(" + nodo.tamano + ") ";
 		resultado += toStringRec(nodo.der);
 		return resultado;
 	}
 
 
-	
+
 
 
 

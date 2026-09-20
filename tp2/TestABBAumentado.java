@@ -30,7 +30,7 @@ public class TestABBAumentado {
 		System.out.println("sucesor(20) => " + abba.sucesor(20));
 		System.out.println("predecesor(20) => " + abba.predecesor(20));
 		System.out.println("predecesor(40) => " + abba.predecesor(40));
-		System.out.println("Tamaños consistentes? => " + abba.tamanosConsistentes());
+		System.out.println("Tamanos consistentes? => " + abba.tamanosConsistentes());
 
 		System.out.println("Contiene 30? => " + abba.contiene(30));
 		System.out.println("altura => " + abba.altura());

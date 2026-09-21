@@ -52,18 +52,20 @@ public class TablaEncadenada<K,E> {
             }
         actual = actual.siguiente;
         }
-
-        Entrada<K,E> nueva = new Entrada<>();
+        // Si la clave no existe, se crea una nueva entrada.
+        Entrada<K,E> nueva = new Entrada();
         nueva.clave = clave;
         nueva.datos = datos;
+        // La nueva entrada se agrega al comienzo de la lista.
         nueva.siguiente = tabla[posicion];
         tabla[posicion] = nueva;
-
-		this.n++;
+        this.n++;
+        // Si se supera el factor de carga maximo, se duplica la tabla y se vuelven a distribuir los elementos
         if ((double) n / m > this.amax) {
             rehash();
         }
     }
+    // Duplica el tamaño de la tabla
     @SuppressWarnings("unchecked")
     private void rehash() {
         Entrada<K,E>[] tablaAnterior = tabla;
@@ -73,6 +75,7 @@ public class TablaEncadenada<K,E> {
             Entrada<K,E> actual=tablaAnterior[i];
             while (actual!=null) {
                 Entrada<K,E> siguiente=actual.siguiente;
+                // Se calcula nuevamente la posicion porque se cambio el tamanio
                 int posicion=h(actual.clave);
                 actual.siguiente=tabla[posicion];
                 tabla[posicion]=actual;
@@ -80,6 +83,7 @@ public class TablaEncadenada<K,E> {
             }
         }
     }
+    //busca clave si no existe retorna null
     public E obtener (K clave){
         int posicion=h(clave);
         Entrada<K,E> actual=tabla[posicion];
@@ -103,6 +107,7 @@ public class TablaEncadenada<K,E> {
                 if (anterior == null) {
                     tabla[posicion] = actual.siguiente;
                 } else {
+                    // si no es el primer elemento se enlazan el anterior y el siguiente
                     anterior.siguiente = actual.siguiente;
                 }
                 n--;
@@ -128,6 +133,7 @@ public class TablaEncadenada<K,E> {
     public void reiniciarSondas(){
         this.sondas=0;
     }
+    // Muestra por pantalla el contenido de cada posicion de la tabla en cada posicion se imprimen las claves de la lista enlazada.
     public void dump() {
         for (int i = 0; i < tabla.length; i++) {
             System.out.print(i + ": ");

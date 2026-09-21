@@ -65,7 +65,7 @@ public class TestIndiceDoble {
         System.out.println("arbol.size() = " + arbol.size());
         System.out.println();
         experimento1();
-        experimento2(); 
+        experimento2();
     }
     public static boolean contieneIndice(IndiceDoble<Integer, String> indice,Integer clave) {
         try {
@@ -75,6 +75,70 @@ public class TestIndiceDoble {
             return false;
         } catch (ClaveNulaException e) {
             return false;
+        }
+    }
+	 public static int[] generar(int N) {
+        int[] claves=new int[N];
+        int i;
+        for (i=0;i<N;i++) {
+            claves[i]=i+1;
+        }
+        Random random=new Random(2026);
+        for (i=N-1;i>0;i--) {
+            int j=random.nextInt(i+1);
+            int aux=claves[i];
+            claves[i]=claves[j];
+            claves[j]=aux;
+        }
+        return claves;
+    }
+
+    public static void experimento1() throws Exception {
+        int[] valoresN={2000, 4000, 6000, 8000, 10000};
+        System.out.println();
+        System.out.println("N       vis_ABB_get       sondas_hash_get            alpha                         m");
+        for (int N : valoresN) {
+            int[] claves=generar(N);
+            IndiceDoble<Integer, Integer> indice=new IndiceDoble<>();
+            for (int i=0; i<N; i++) {
+                indice.agregar(claves[i], claves[i]);
+            }
+            ABBAumentado<Integer, Integer> arbol=indice.getArbol();
+            TablaEncadenada<Integer, ABBAumentado.Nodo<Integer, Integer>> tabla=indice.getTabla();
+            int m = tabla.capacidad();
+            arbol.reiniciarVisitas();
+            for (int i=0; i<N; i++) {
+                arbol.obtener(claves[i]);
+            }
+            long visABB=arbol.visitas();
+            tabla.reiniciarSondas();
+            for (int i=0; i<N; i++) {
+                indice.obtener(claves[i]);
+            }
+            long sondasHash=tabla.sondas();
+            double alpha=tabla.factorCarga();
+            System.out.println(N + "          " +visABB + "             " +sondasHash + "            " +alpha+"                "+m);
+        }
+    }
+
+    public static void experimento2() throws Exception {
+        int[] valoresN={2000,4000,6000,8000,10000};
+        int i;
+        System.out.println();
+        System.out.println("N                 alpha                  sondas/N");
+        for (int N : valoresN) {
+            TablaEncadenada<Integer, Integer> tabla=new TablaEncadenada<>(97, Double.POSITIVE_INFINITY);
+            for (i=1; i<=N;i++) {
+                tabla.insertar(i, i);
+            }
+            tabla.reiniciarSondas();
+            for (i=1;i<=N;i++) {
+                tabla.obtener(i);
+            }
+            long sondas=tabla.sondas();
+            double alpha=tabla.factorCarga();
+            double sondasPorN=(double)sondas/N;
+            System.out.println(N + "        " +alpha + "           " +sondasPorN);
         }
     }
 }

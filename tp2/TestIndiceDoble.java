@@ -27,6 +27,7 @@ public class TestIndiceDoble {
         imprimirEstado(indice, arbol, tabla);
         System.out.println();
         System.out.println("FASE B");
+
         indice.agregar(61, "P61");
         indice.agregar(41, "P41");
         imprimirEstado(indice, arbol, tabla);

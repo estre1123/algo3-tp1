@@ -64,7 +64,7 @@ public class ABBAumentado <K extends Comparable<? super K>, V> implements Iterab
 		this.raiz = agregarRec(this.raiz, clave, valor);
 	}
 
-	public Nodo<K, V> agregarRec(Nodo<K, V> nodo, K clave, V valor) {
+	private Nodo<K, V> agregarRec(Nodo<K, V> nodo, K clave, V valor) {
 		if (nodo == null) {
 			return new Nodo<>(clave, valor); //si estamos en una hoja VACIA, creamos un nodo y lo retornamos
 		}
@@ -406,15 +406,12 @@ public class ABBAumentado <K extends Comparable<? super K>, V> implements Iterab
 		if (clave == null) {
 			throw new ClaveNulaException("La clave no puede ser nula.");
 		}
-		if (!this.contiene(clave)) {
-			throw new ClaveInexistenteException("La clave no existe.");
-		}
 		return sucesorRec(this.raiz, null, clave);
 	}
 
-	private K sucesorRec(Nodo<K,V> nodo, Nodo<K,V> padre, K clave) {
+	private K sucesorRec(Nodo<K,V> nodo, Nodo<K,V> padre, K clave) throws ClaveInexistenteException {
 		if (nodo == null) {
-			return null;
+			throw new ClaveInexistenteException("La clave no existe.");
 		}
 		this.visitas++;
 		//comparacion de la clave con el nodo actual, hecho aparte para evitar escribir mil veces el compareTo, y para que sea mas facil de leer
@@ -440,15 +437,12 @@ public class ABBAumentado <K extends Comparable<? super K>, V> implements Iterab
 		if (clave == null) {
 			throw new ClaveNulaException("La clave no puede ser nula.");
 		}
-		if (!this.contiene(clave)) {
-			throw new ClaveInexistenteException("La clave no existe.");
-		}
 		return predecesorRec(this.raiz, null, clave);
 	}
 
-	private K predecesorRec(Nodo<K,V> nodo, Nodo<K,V> padre, K clave) {
+	private K predecesorRec(Nodo<K,V> nodo, Nodo<K,V> padre, K clave) throws ClaveInexistenteException {
 		if (nodo == null) {
-			return null;
+			throw new ClaveInexistenteException("La clave no existe.");
 		}
 		this.visitas++;
 		int cmp = clave.compareTo(nodo.clave);

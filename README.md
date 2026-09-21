@@ -167,3 +167,62 @@ Cada nodo guarda clave, valor, dos referencias y un entero tamano, o sea una can
 - **c -** `vis_rango_aum` queda en decenas porque aprovecha el atributo tamano en cada nodo, asi no necesita recorrer todo el arbol por el concepto de ABB. `vis_rango_ing` es N porque recorre TODOS los nodos del arbol
 
 - **d -** En la traza del arbol chico (n = 9 y h = 3), las visitas en rango = 8, y rangoIng = 9, a pesar de que la diferencia es poca, la ventaja de rango() se sigue manteniendo por sobre rangoIngenuo, y la diferencia entre ambos crecera conforme crezca N, esto no contradice los puntos expuestos anteriormente
+
+
+## 7. Búsqueda con encadenamiento
+
+En una tabla hash con encadenamiento, si las claves se reparten de forma uniforme entre las cubetas, la búsqueda tiene tiempo esperado:
+
+> **Θ(1)**
+
+En el peor caso, si todas las claves están en una misma cubeta, va a recorrer toda la cadena. Por lo tanto, el peor caso es:
+
+> **Θ(n)**
+
+El espacio utilizado por la tabla es:
+
+> **Θ(n)**
+
+ya que se deben almacenar las `n` claves y sus referencias.
+
+---
+
+## 8. `agregar` del índice doble
+
+La operación `agregar` del índice doble realiza una inserción en el ABB y una inserción en la tabla hash.
+
+En el caso promedio, la parte de la tabla hash cuesta:
+
+> **Θ(1)**
+
+mientras que la inserción en el ABB depende de su altura `h`. Por lo tanto, el costo promedio de `agregar` es:
+
+> **Θ(h)**
+
+En el peor caso, una inserción puede llamar a `rehash`. `rehash` debe recorrer y reubicar las claves que ya estaban almacenadas, por eso una llamada de `rehash` puede costar:
+
+> **Θ(n + h)**
+
+donde **Θ(n)** corresponde al `rehash` de la tabla y **Θ(h)** a la inserción en el ABB.
+
+La capacidad de la tabla se duplica cada vez que se realiza un `rehash`. Por ello, al insertar `n` claves desde una tabla vacía, el trabajo total de todos los `rehash` es:
+
+> **Θ(n)**
+
+repartido entre todas las inserciones.
+
+Por eso, el costo promedio de la parte de tabla hash de `agregar` es:
+
+> **Θ(1)**
+
+---
+
+## 9. Relación con las tablas del experimento
+
+Los resultados experimentales coinciden con estas complejidades.
+
+En el experimento con el árbol aleatorio, la altura crece mucho más lentamente que `N`, por lo que las visitas necesarias para las operaciones del ABB se mantienen relativamente bajas.
+
+En el árbol ordenado, la altura es `N - 1`, por lo que el árbol se convierte en una cadena y las visitas crecen aproximadamente de forma lineal con `N`.
+
+Para la tabla hash, cuando las claves se distribuyen de manera uniforme, la cantidad de sondas se mantiene estable. En cambio, cuando hay más colisiones y varias claves quedan en una misma cubeta, las cadenas se hacen más largas y la cantidad de sondas también crece.

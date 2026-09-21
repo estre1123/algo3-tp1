@@ -9,17 +9,16 @@ Para usar jshell rapidamente, usar este comando:
 ```
 
 ---
-
-## PUNTO 5 - EJ1
----
 ### Jerarquía de excepciones
 
 * **`ClaveInexistenteException`**: chequeada, porque una clave inexistente puede ocurrir durante el uso normal y el código que llama puede manejarla.
 * **`IndiceFueraDeRangoException`**: no chequeada, porque un índice inválido en `kEsimo` representa un error de programación.
 * **`ClaveNulaException`**: no chequeada, porque una clave `null` representa un uso incorrecto de la estructura.
 * **`RangoInvalidoException`**: no chequeada, porque un rango inválido representa un error de programación al realizar la consulta.
-
 Las excepciones chequeadas representan situaciones previsibles y manejables; las no chequeadas representan errores de programación.
+
+---
+## PUNTO 5 - EJ1
 ---
 ### a- por qué `h_ord` es N − 1 y `vis_kEsimo_ord` es N /2?
 

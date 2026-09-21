@@ -214,7 +214,7 @@ Por lo tanto, el costo promedio de `agregar` es:
 
 > **Θ(h + 1 + α)**
 
-Si el factor de carga `α` se mantiene constante, este costo se puede expresar como:
+Si el factor de carga `α` se mantiene constante, esto se puede expresar como:
 
 > **Θ(h)**
 
@@ -226,9 +226,9 @@ Además, la inserción en el ABB cuesta `Θ(h)`. Por lo tanto, una operación `a
 
 > **Θ(n + m + h)**
 
-Como la capacidad de la tabla se duplica cada vez que se realiza un `rehash`, el trabajo total de todos los `rehash` al insertar `n` claves desde una tabla vacía es:
+Sin embargo, la capacidad de la tabla se duplica cada vez que se realiza un `rehash`. Al insertar `n` claves desde una tabla vacía, el trabajo total de los `rehash` es:
 
-> **O(n)**
+> **Θ(n)**
 
 porque la suma de los elementos reubicados forma una serie geométrica:
 
@@ -236,16 +236,17 @@ porque la suma de los elementos reubicados forma una serie geométrica:
 n + n/2 + n/4 + ... < 2n
 ```
 
-Por lo tanto, el costo total acumulado de los `rehash` es lineal:
+Este costo se reparte entre todas las inserciones, por lo que el costo amortizado de la parte de tabla hash es:
 
-> **O(n)**
+> **Θ(1 + α)**
 
-Este costo se reparte entre todas las inserciones, por lo que el costo amortizado de la parte de `rehash` es:
+y, si `α` se mantiene constante:
 
-> **O(1)**
+> **Θ(1)**
 
-Si `α` se mantiene constante, la parte de tabla hash tiene costo amortizado constante. La inserción en el ABB sigue dependiendo de la altura `h`.
+Por lo tanto, el costo amortizado de `agregar` en el índice doble es:
 
+> **Θ(h)**
 
 
 ---
@@ -269,4 +270,3 @@ Como consecuencia, las cadenas de las cubetas se hacen más largas y aumenta la 
 > **Θ(1 + α)**
 
 Estos resultados muestran la diferencia entre las dos estructuras: el ABB permite realizar las operaciones ordenadas, como `kEsimo` y `consultarRango`, mientras que la tabla hash permite realizar búsquedas por clave recorriendo solamente la cadena correspondiente.
-

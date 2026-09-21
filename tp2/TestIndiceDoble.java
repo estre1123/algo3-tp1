@@ -35,7 +35,8 @@ public class TestIndiceDoble {
         System.out.println("arbol.visitas() = " + arbol.visitas());
         System.out.println("tabla.sondas() = " + tabla.sondas());
         System.out.println();
-        System.out.println("B");
+        System.out.println("FASE B");
+
         indice.agregar(61, "P61");
         indice.agregar(41, "P41");
         tabla.dump();
@@ -76,7 +77,7 @@ public class TestIndiceDoble {
         System.out.println("arbol.size() = " + arbol.size());
         System.out.println();
         experimento1();
-        experimento2(); 
+        experimento2();
     }
     public static boolean contieneIndice(IndiceDoble<Integer, String> indice,Integer clave) {
         try {
@@ -88,7 +89,7 @@ public class TestIndiceDoble {
             return false;
         }
     }
-    public static int[] generar(int N) {
+	 public static int[] generar(int N) {
         int[] claves=new int[N];
         int i;
         for (i=0;i<N;i++) {
@@ -106,7 +107,7 @@ public class TestIndiceDoble {
 
     public static void experimento1() throws Exception {
         int[] valoresN={2000, 4000, 6000, 8000, 10000};
-        System.out.println();     
+        System.out.println();
         System.out.println("N       vis_ABB_get       sondas_hash_get            alpha                         m");
         for (int N : valoresN) {
             int[] claves=generar(N);

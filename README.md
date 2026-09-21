@@ -167,3 +167,98 @@ Cada nodo guarda clave, valor, dos referencias y un entero tamano, o sea una can
 - **c -** `vis_rango_aum` queda en decenas porque aprovecha el atributo tamano en cada nodo, asi no necesita recorrer todo el arbol por el concepto de ABB. `vis_rango_ing` es N porque recorre TODOS los nodos del arbol
 
 - **d -** En la traza del arbol chico (n = 9 y h = 3), las visitas en rango = 8, y rangoIng = 9, a pesar de que la diferencia es poca, la ventaja de rango() se sigue manteniendo por sobre rangoIngenuo, y la diferencia entre ambos crecera conforme crezca N, esto no contradice los puntos expuestos anteriormente
+## 7. Búsqueda con encadenamiento
+
+En una tabla hash con encadenamiento, si las claves se distribuyen de forma uniforme entre las cubetas, el costo esperado de una búsqueda es:
+
+> **Θ(1 + α)**
+
+donde `α = n / m` es el factor de carga, con `n` claves y `m` cubetas.
+
+Cuando `α` se mantiene constante, este costo se puede expresar como **Θ(1)**.
+
+En el peor caso, si todas las claves están en una misma cubeta, la búsqueda debe recorrer toda la cadena. Por lo tanto, el peor caso es:
+
+> **Θ(n)**
+
+El espacio utilizado por la tabla es:
+
+> **Θ(n + m)**
+
+ya que se deben almacenar las `n` claves y sus referencias, además del arreglo de `m` cubetas.
+
+
+---
+
+## 8. `agregar` del índice doble
+
+La operación `agregar` del índice doble realiza una inserción en el ABB y una inserción en la tabla hash.
+
+En el caso promedio, la inserción en la tabla hash cuesta:
+
+> **Θ(1 + α)**
+
+mientras que la inserción en el ABB depende de su altura `h` y cuesta:
+
+> **Θ(h)**
+
+Por lo tanto, el costo promedio de `agregar` es:
+
+> **Θ(h + 1 + α)**
+
+Si el factor de carga `α` se mantiene constante, esto se puede expresar como:
+
+> **Θ(h)**
+
+En el peor caso, una inserción puede disparar un `rehash`. El `rehash` debe recorrer y reubicar las claves almacenadas en la tabla, por lo que cuesta:
+
+> **Θ(n + m)**
+
+Además, la inserción en el ABB cuesta `Θ(h)`. Por lo tanto, una operación `agregar` que dispara `rehash` puede costar:
+
+> **Θ(n + m + h)**
+
+Sin embargo, la capacidad de la tabla se duplica cada vez que se realiza un `rehash`. Al insertar `n` claves desde una tabla vacía, el trabajo total de los `rehash` es:
+
+> **Θ(n)**
+
+porque la suma de los elementos reubicados forma una serie geométrica:
+
+```text
+n + n/2 + n/4 + ... < 2n
+```
+
+Este costo se reparte entre todas las inserciones, por lo que el costo amortizado de la parte de tabla hash es:
+
+> **Θ(1 + α)**
+
+y, si `α` se mantiene constante:
+
+> **Θ(1)**
+
+Por lo tanto, el costo amortizado de `agregar` en el índice doble es:
+
+> **Θ(h)**
+
+
+---
+
+## 9. Relación con las tablas del experimento
+
+Los resultados experimentales permiten observar las complejidades analizadas anteriormente.
+
+En el primer experimento, el índice doble utiliza una tabla hash con rehash. Al aumentar `N`, la tabla mantiene un factor de carga controlado y las búsquedas por hash requieren pocas sondas. Por eso, la cantidad de `sondas_hash_get` se mantiene relativamente estable.
+
+En cambio, las búsquedas realizadas directamente sobre el ABB dependen de su altura `h`. Por eso, `vis_ABB_get` crece a medida que aumenta la cantidad de claves.
+
+En el segundo experimento, la tabla tiene una cantidad fija de cubetas (`m = 97`) y no realiza rehash. Al aumentar `N`, aumenta el factor de carga:
+
+```text
+α = N / m
+```
+
+Como consecuencia, las cadenas de las cubetas se hacen más largas y aumenta la cantidad promedio de sondas por búsqueda. Por lo tanto, `sondas/N` crece junto con `α`, de acuerdo con el costo esperado:
+
+> **Θ(1 + α)**
+
+Estos resultados muestran la diferencia entre las dos estructuras: el ABB permite realizar las operaciones ordenadas, como `kEsimo` y `consultarRango`, mientras que la tabla hash permite realizar búsquedas por clave recorriendo solamente la cadena correspondiente.

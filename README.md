@@ -1,6 +1,6 @@
 # README - ABBAumentado
 
-## Uso rapido con jshell
+Uso rapido con jshell
 
 Para usar jshell rapidamente, usar este comando:
 

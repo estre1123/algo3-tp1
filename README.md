@@ -11,7 +11,16 @@ Para usar jshell rapidamente, usar este comando:
 ---
 
 ## PUNTO 5 - EJ1
+---
+### Jerarquía de excepciones
 
+* **`ClaveInexistenteException`**: chequeada, porque una clave inexistente puede ocurrir durante el uso normal y el código que llama puede manejarla.
+* **`IndiceFueraDeRangoException`**: no chequeada, porque un índice inválido en `kEsimo` representa un error de programación.
+* **`ClaveNulaException`**: no chequeada, porque una clave `null` representa un uso incorrecto de la estructura.
+* **`RangoInvalidoException`**: no chequeada, porque un rango inválido representa un error de programación al realizar la consulta.
+
+Las excepciones chequeadas representan situaciones previsibles y manejables; las no chequeadas representan errores de programación.
+---
 ### a- por qué `h_ord` es N − 1 y `vis_kEsimo_ord` es N /2?
 
 R = `h_ord` es N - 1 porque al insertar 1, 2, ..., N en orden, cada clave nueva es mayor que todas las que ya estan, entonces siempre se agrega como hijo derecho del ultimo nodo y el arbol gana un nivel por cada insercion. Como la altura se mide en aristas (con n = 1, h = 0; con n = 2, h = 1), con N nodos queda h = N - 1. El arbol es en la practica una lista enlazada.

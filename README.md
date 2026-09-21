@@ -206,7 +206,7 @@ Por lo tanto, el costo promedio de `agregar` es:
 
 > **Θ(h + 1 + α)**
 
-Si el factor de carga `α` se mantiene constante, esto se puede expresar como:
+Si el factor de carga `α` se mantiene constante, este costo se puede expresar como:
 
 > **Θ(h)**
 
@@ -218,9 +218,9 @@ Además, la inserción en el ABB cuesta `Θ(h)`. Por lo tanto, una operación `a
 
 > **Θ(n + m + h)**
 
-Sin embargo, la capacidad de la tabla se duplica cada vez que se realiza un `rehash`. Al insertar `n` claves desde una tabla vacía, el trabajo total de los `rehash` es:
+Como la capacidad de la tabla se duplica cada vez que se realiza un `rehash`, el trabajo total de todos los `rehash` al insertar `n` claves desde una tabla vacía es:
 
-> **Θ(n)**
+> **O(n)**
 
 porque la suma de los elementos reubicados forma una serie geométrica:
 
@@ -228,17 +228,16 @@ porque la suma de los elementos reubicados forma una serie geométrica:
 n + n/2 + n/4 + ... < 2n
 ```
 
-Este costo se reparte entre todas las inserciones, por lo que el costo amortizado de la parte de tabla hash es:
+Por lo tanto, el costo total acumulado de los `rehash` es lineal:
 
-> **Θ(1 + α)**
+> **O(n)**
 
-y, si `α` se mantiene constante:
+Este costo se reparte entre todas las inserciones, por lo que el costo amortizado de la parte de `rehash` es:
 
-> **Θ(1)**
+> **O(1)**
 
-Por lo tanto, el costo amortizado de `agregar` en el índice doble es:
+Si `α` se mantiene constante, la parte de tabla hash tiene costo amortizado constante. La inserción en el ABB sigue dependiendo de la altura `h`.
 
-> **Θ(h)**
 
 
 ---

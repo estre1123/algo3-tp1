@@ -1,20 +1,11 @@
-/*
-grupo:g_tq6
-Nro tarea: TP1
-Integrantes:
-	Espinola Aguero,Anibal Julian  CIC=6362752  SECCION=TQ
-	Hsu Yang, Estrella  CIC=5837842  SECCION=TQ
-Nosotros, Anibal Julian Espinola Aguero y Estrella Hsu Yang:
-No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, solo con el Profesor o el AER.
-No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
-Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
-*/
+import java.util.Random;
+
 public class TestIndiceDoble {
     public static void main(String[] args) throws Exception{
         IndiceDoble<Integer, String> indice = new IndiceDoble<>();
         ABBAumentado<Integer, String> arbol = indice.getArbol();
         TablaEncadenada<Integer, ABBAumentado.Nodo<Integer, String>> tabla=indice.getTabla();
-        System.out.println("FASE A");
+        System.out.println("A");
         indice.agregar(50, "P50");
         indice.agregar(30, "P30");
         indice.agregar(70, "P70");
@@ -24,14 +15,26 @@ public class TestIndiceDoble {
         indice.agregar(80, "P80");
         indice.agregar(35, "P35");
         indice.agregar(65, "P65");
-        imprimirEstado(indice, arbol, tabla);
+        tabla.dump();
+        System.out.println("ARBOL:");
+        System.out.println(arbol.toString());
+        System.out.println("indice.size() = " + indice.size());
+        System.out.println("arbol.size() = " + arbol.size());
+        System.out.println("arbol.visitas() = " + arbol.visitas());
+        System.out.println("tabla.sondas() = " + tabla.sondas());
         System.out.println();
-        System.out.println("FASE B");
+        System.out.println("B");
         indice.agregar(61, "P61");
         indice.agregar(41, "P41");
-        imprimirEstado(indice, arbol, tabla);
+        tabla.dump();
+        System.out.println("ARBOL:");
+        System.out.println(arbol.toString());
+        System.out.println("indice.size() = " + indice.size());
+        System.out.println("arbol.size() = " + arbol.size());
+        System.out.println("arbol.visitas() = " + arbol.visitas());
+        System.out.println("tabla.sondas() = " + tabla.sondas());
         System.out.println();
-        System.out.println("FASE C");
+        System.out.println("C");
         arbol.reiniciarVisitas();
         tabla.reiniciarSondas();
         String resultadoIndice = indice.obtener(70);
@@ -43,36 +46,27 @@ public class TestIndiceDoble {
         System.out.println("arbol.obtener(70) = " + resultadoArbol);
         System.out.println("arbol.visitas() = " + arbol.visitas());
         System.out.println();
-        System.out.println("FASE D");
+        System.out.println("D");
         indice.eliminar(30);
-        imprimirEstado(indice, arbol, tabla);
-        System.out.println();
-        System.out.println("indice.obtener(35) = " + indice.obtener(35));
-        System.out.println("indice.kEsimo(2) = " + indice.kEsimo(2));
+        tabla.dump();
+        System.out.println("ARBOL:");
+        System.out.println(arbol.toString());
+        System.out.println("indice.size() = " + indice.size());
+        System.out.println("arbol.size() = " + arbol.size());
+        System.out.println("arbol.visitas() = " + arbol.visitas());
+        System.out.println("tabla.sondas() = " + tabla.sondas());
         System.out.println();
         System.out.println("indice.contiene(30) = " + contieneIndice(indice, 30));
         System.out.println("arbol.contiene(30) = " + arbol.contiene(30));
+        System.out.println("indice.kEsimo(2) = " + indice.kEsimo(2));
+        System.out.println("indice.obtener(35) = " + indice.obtener(35));
+        System.out.println("indice.size() = " + indice.size());
+        System.out.println("arbol.size() = " + arbol.size());
         System.out.println();
+        experimento1();
+        experimento2(); 
     }
-
-    public static void imprimirEstado(
-            IndiceDoble<Integer, String> indice,
-            ABBAumentado<Integer, String> arbol,
-            TablaEncadenada<Integer, ABBAumentado.Nodo<Integer, String>> tabla) {
-        System.out.println();
-        System.out.println("TABLA:");
-        tabla.dump();
-        System.out.println();
-        System.out.println("ARBOL:");
-        System.out.println(arbol.toString());
-        System.out.println("size arbol = " + arbol.size());
-        System.out.println("size tabla = " + tabla.size());
-        System.out.println("visitas arbol = " + arbol.visitas());
-        System.out.println("sondas tabla = " + tabla.sondas());
-    }
-    public static boolean contieneIndice(
-            IndiceDoble<Integer, String> indice,
-            Integer clave) {
+    public static boolean contieneIndice(IndiceDoble<Integer, String> indice,Integer clave) {
         try {
             indice.obtener(clave);
             return true;
@@ -80,6 +74,70 @@ public class TestIndiceDoble {
             return false;
         } catch (ClaveNulaException e) {
             return false;
+        }
+    }
+    public static int[] generar(int N) {
+        int[] claves=new int[N];
+        int i;
+        for (i=0;i<N;i++) {
+            claves[i]=i+1;
+        }
+        Random random=new Random(2026);
+        for (i=N-1;i>0;i--) {
+            int j=random.nextInt(i+1);
+            int aux=claves[i];
+            claves[i]=claves[j];
+            claves[j]=aux;
+        }
+        return claves;
+    }
+
+    public static void experimento1() throws Exception {
+        int[] valoresN={2000, 4000, 6000, 8000, 10000};
+        System.out.println();     
+        System.out.println("N       vis_ABB_get       sondas_hash_get            alpha                         m");
+        for (int N : valoresN) {
+            int[] claves=generar(N);
+            IndiceDoble<Integer, Integer> indice=new IndiceDoble<>();
+            for (int i=0; i<N; i++) {
+                indice.agregar(claves[i], claves[i]);
+            }
+            ABBAumentado<Integer, Integer> arbol=indice.getArbol();
+            TablaEncadenada<Integer, ABBAumentado.Nodo<Integer, Integer>> tabla=indice.getTabla();
+            int m = tabla.capacidad();
+            arbol.reiniciarVisitas();
+            for (int i=0; i<N; i++) {
+                arbol.obtener(claves[i]);
+            }
+            long visABB=arbol.visitas();
+            tabla.reiniciarSondas();
+            for (int i=0; i<N; i++) {
+                indice.obtener(claves[i]);
+            }
+            long sondasHash=tabla.sondas();
+            double alpha=tabla.factorCarga();
+            System.out.println(N + "          " +visABB + "             " +sondasHash + "            " +alpha+"                "+m);
+        }
+    }
+
+    public static void experimento2() throws Exception {
+        int[] valoresN={2000,4000,6000,8000,10000};
+        int i;
+        System.out.println();
+        System.out.println("N                 alpha                  sondas/N");
+        for (int N : valoresN) {
+            TablaEncadenada<Integer, Integer> tabla=new TablaEncadenada<>(97, Double.POSITIVE_INFINITY);
+            for (i=1; i<=N;i++) {
+                tabla.insertar(i, i);
+            }
+            tabla.reiniciarSondas();
+            for (i=1;i<=N;i++) {
+                tabla.obtener(i);
+            }
+            long sondas=tabla.sondas();
+            double alpha=tabla.factorCarga();
+            double sondasPorN=(double)sondas/N;
+            System.out.println(N + "        " +alpha + "           " +sondasPorN);
         }
     }
 }

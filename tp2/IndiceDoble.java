@@ -8,6 +8,7 @@ Nosotros, Anibal Julian Espinola Aguero y Estrella Hsu Yang:
 No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, solo con el Profesor o el AER.
 No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
 Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
+He utilizado herramientas de Inteligencia Artificial únicamente para comprender el enunciado y aclarar conceptos, sin utilizar código generado por estas herramientas en nuestra solución.
 */
 public class IndiceDoble<K extends Comparable<? super K>, V> {
 

@@ -480,6 +480,10 @@ public class ArbolBMas implements AutoCloseable{
 					cantidad++;
 				}
 			}
+			//parar si el ultimo elemento de la hoja es mayor o igual al limite superior del rango
+			if (nodo.n > 0 && nodo.claves[nodo.n - 1] >= hasta) {
+    			return cantidad;
+			}
 
 			if (nodo.siguiente==-1) {
 				nodo=null;

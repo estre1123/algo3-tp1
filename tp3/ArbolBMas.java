@@ -458,7 +458,7 @@ public class ArbolBMas implements AutoCloseable{
 		return izq;
 	}
 
-	public int buscarRango(long desde, long hasta, ConsumidorEntrada c)throws IOException, RangoInvalidoException{
+	public int buscarRango(long desde, long hasta, ConsumidorEntrada c)throws IOException, RangoInvalidoException {
 		if (desde > hasta) {
         	throw new RangoInvalidoException("Rango invalido");
     	}
@@ -486,9 +486,18 @@ public class ArbolBMas implements AutoCloseable{
 			} else {
 				nodo=leerNodo(nodo.siguiente);
 			}
-			
+
 		}
 		return cantidad;
+	}
+
+	@Override
+	public void close() throws IOException {
+		try {
+			escribirHeader();
+		} finally {
+			archivo.close();
+		}
 	}
 
 }

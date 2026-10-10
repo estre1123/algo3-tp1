@@ -458,7 +458,7 @@ public class ArbolBMas implements AutoCloseable{
 		return izq;
 	}
 
-	public int buscarRango(long desde, long hasta, ConsumidorEntrada c)throws IOException, RangoInvalidoException{
+	public int buscarRango(long desde, long hasta, ConsumidorEntrada c)throws IOException, RangoInvalidoException {
 		if (desde > hasta) {
         	throw new RangoInvalidoException("Rango invalido");
     	}
@@ -480,15 +480,28 @@ public class ArbolBMas implements AutoCloseable{
 					cantidad++;
 				}
 			}
+			//parar si el ultimo elemento de la hoja es mayor o igual al limite superior del rango
+			if (nodo.n > 0 && nodo.claves[nodo.n - 1] >= hasta) {
+    			return cantidad;
+			}
 
 			if (nodo.siguiente==-1) {
 				nodo=null;
 			} else {
 				nodo=leerNodo(nodo.siguiente);
 			}
-			
+
 		}
 		return cantidad;
+	}
+
+	@Override
+	public void close() throws IOException {
+		try {
+			escribirHeader();
+		} finally {
+			archivo.close();
+		}
 	}
 
 }

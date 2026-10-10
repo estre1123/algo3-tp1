@@ -458,13 +458,37 @@ public class ArbolBMas implements AutoCloseable{
 		return izq;
 	}
 
+	public int buscarRango(long desde, long hasta, ConsumidorEntrada c)throws IOException, RangoInvalidoException{
+		if (desde > hasta) {
+        	throw new RangoInvalidoException("Rango invalido");
+    	}
+		int cantidad=0;
+		Nodo nodo=leerNodo(raiz);
+		//ir desde la raiz hasta la hoja
+		while (nodo.tipo!=0) {
+			int i=indiceHijo(nodo, desde);
+			nodo=leerNodo(nodo.hijos[i]);
+    	}
+		int i;
+		// Recorrer las hojas mientras no se termine el rango
+		while (nodo!=null) {
+			for (i=0; i< nodo.n ; i++) {
+				if (nodo.claves[i] > hasta) {
+					return cantidad;
+				} else if (nodo.claves[i]>=desde) {
+					c.aceptar(nodo.claves[i], nodo.posiciones[i]);
+					cantidad++;
+				}
+			}
 
-	@Override
-	public void close() throws IOException {
-		try {
-			escribirHeader();
-		} finally {
-			archivo.close();
+			if (nodo.siguiente==-1) {
+				nodo=null;
+			} else {
+				nodo=leerNodo(nodo.siguiente);
+			}
+			
 		}
+		return cantidad;
 	}
+
 }

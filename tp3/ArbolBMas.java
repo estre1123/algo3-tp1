@@ -205,15 +205,18 @@ public class ArbolBMas implements AutoCloseable{
 			throw e;
 		}
 	}
-
 	private Nodo leerNodo(int pagina) throws IOException {
+		return leerNodo(pagina, true);
+	}
+	private Nodo leerNodo(int pagina, boolean contar) throws IOException {
 		//creamos un arr que basicamente va a tener todos los datos de la pag
 		byte[] datos = new byte[P];
 		archivo.seek((long) pagina * P);
 		//basicamente copia los datos de la pagina en el arr de bytes
 		archivo.readFully(datos);
-		cantPagLeidas++;
-
+		if (contar) {
+        	cantPagLeidas++;
+    	}
 		//creamos un buffer de bytes para leer los datos del arr de bytes, el buffer es como un arreglo de bytes que se puede leer
 		ByteBuffer buffer = ByteBuffer.wrap(datos);
 
@@ -494,7 +497,309 @@ public class ArbolBMas implements AutoCloseable{
 		}
 		return cantidad;
 	}
+	public int niveles(){
+		return this.niveles;
+	}
+	public int raiz(){
+		return this.raiz;
+	}
+	public int cantidadPaginas(){
+		return this.numPaginas;
+	}
+	public long cantidadClavez(){
+		return this.cantClaves;
+	}
+	public int tamPagina(){
+		return this.P;
+	}
+	public int ordenInterno(){
+		return this.M;
+	}
+	public int capacidadHoja(){
+		return this.L;
+	}
+	public long paginasEscritas(){
+		return cantPagEscritas;
+	}
+	public String volcarPagina(int nro) throws IOException {
+		Nodo nodo=leerNodo(nro);
+		String resultado="#"+nro;
+		int i;
+		if (nodo.tipo == 0) {
+			// Hoja
+			resultado+=" H n="+nodo.n;
+			resultado+=" sig="+nodo.siguiente;
+			resultado+=" [";
+			for (i=0; i<nodo.n; i++) {
+				resultado+=" ";
+				resultado+=nodo.claves[i]+":"+nodo.posiciones[i];
+			}
+			resultado+="]";
+		} else {
+			// Interno
+			resultado+=" I n="+nodo.n;
+			resultado+=" [";
+			for (i=0; i < nodo.n; i++) {
+				resultado+="#"+nodo.hijos[i];
+				resultado+=" "+nodo.claves[i]+" ";
+			}
+			resultado += "#" + nodo.hijos[nodo.n] + "]";
+			}
 
+		return resultado;
+	}
+
+	public String volcarArbol() throws IOException {
+		String resultado = "";
+		int[] cola=new int[numPaginas];
+		int frente=0;
+		int fin=0;
+		int nivel=1;
+		int i,j;
+		cola[fin]=raiz;
+		fin++;
+		while (frente<fin) {
+			int cantidad=fin-frente;
+			resultado+=nivel+": ";
+			for (i=0; i<cantidad; i++) {
+				int pagina=cola[frente];
+				frente++;
+				Nodo nodo=leerNodo(pagina, false);
+				if (i > 0) {
+					resultado += " | ";
+				}
+				resultado+="#"+pagina;
+				if (nodo.tipo==0) {
+					resultado+="[";
+					for (j=0; j<nodo.n; j++) {
+						if (j>0) {
+							resultado+=",";
+						}
+						resultado+=nodo.claves[j];
+					}
+					resultado+="]";
+				} else {
+					resultado += "(";
+					for (j=0; j<nodo.n; j++) {
+						if (j>0) {
+							resultado+=",";
+						}
+						resultado+=nodo.claves[j];
+					}
+					resultado+=")";
+					for (j=0; j<=nodo.n; j++) {
+						cola[fin]=nodo.hijos[j];
+						fin++;
+					}
+				}
+			}
+			if (frente<fin) {
+				resultado += "\n";
+			}
+			nivel++;
+		}
+		return resultado;
+	}
+	public class EstadisticasBMas {
+
+		public int hojas;
+		public int internos;
+
+		public double ocupacionHojas;
+		public double ocupacionInternos;
+	}
+	
+	public EstadisticasBMas estadisticas() throws IOException {
+		EstadisticasBMas e = new EstadisticasBMas();
+		int sumaHojas = 0;
+		int sumaInternos = 0;
+		int[] cola = new int[numPaginas];
+		int frente = 0;
+		int fin = 0;
+		cola[fin] = raiz;
+		fin++;
+		while (frente < fin) {
+			int pagina = cola[frente];
+			frente++;
+			Nodo nodo = leerNodo(pagina, false);
+			if (nodo.tipo == 0) {
+				e.hojas++;
+				sumaHojas += nodo.n;
+			} else {
+				e.internos++;
+				sumaInternos += nodo.n + 1;
+				for (int i = 0; i <= nodo.n; i++) {
+					cola[fin] = nodo.hijos[i];
+					fin++;
+				}
+			}
+		}
+		if (e.hojas > 0) {
+			e.ocupacionHojas =(double) sumaHojas / (e.hojas * L);
+		}
+		if (e.internos > 0) {
+			e.ocupacionInternos =(double) sumaInternos / (e.internos * M);
+		}
+		return e;
+	}
+	private static class EstadoVerificacion {
+		boolean[] visitadas;
+		int paginasVisitadas;
+		long clavesContadas;
+		int ultimaHoja;
+
+		EstadoVerificacion(int numPaginas) {
+			visitadas = new boolean[numPaginas];
+			paginasVisitadas = 0;
+			clavesContadas = 0;
+			ultimaHoja = -1;
+		}
+	}
+
+	public String verificarInvariantes() throws IOException {
+		if (numPaginas < 2) {
+			return "Cantidad de paginas invalida";
+		}
+		if (archivo.length() != (long) numPaginas * P) {
+			return "Longitud del archivo incorrecta";
+		}
+		if (raiz < 1 || raiz >= numPaginas) {
+			return "Pagina raiz invalida";
+		}
+		if (niveles < 1) {
+			return "Cantidad de niveles invalida";
+		}
+		EstadoVerificacion estado =new EstadoVerificacion(numPaginas);
+		String error = verificarNodo(raiz, 1, null, null, estado);
+		if (!error.equals("OK")) {
+			return error;
+		}
+		if (estado.ultimaHoja != -1) {
+			Nodo ultima = leerNodo(estado.ultimaHoja, false);
+			if (ultima.siguiente != -1) {
+				return "La ultima hoja no termina en -1";
+			}
+		}
+		if (estado.clavesContadas != cantClaves) {
+			return "Cantidad de claves diferente de la cabecera";
+		}
+		for (int i = 1; i < numPaginas; i++) {
+			if (!estado.visitadas[i]) {
+				return "Pagina " + i + " no alcanzable";
+			}
+		}
+		return "OK";
+	}
+	private String verificarNodo(
+			int pagina,
+			int nivelActual,
+			Long minimo,
+			Long maximo,
+			EstadoVerificacion estado) throws IOException {
+		if (pagina < 1 || pagina >= numPaginas) {
+			return "Referencia a pagina invalida: " + pagina;
+		}
+		if (estado.visitadas[pagina]) {
+			return "Pagina " + pagina + " visitada mas de una vez";
+		}
+		estado.visitadas[pagina] = true;
+		estado.paginasVisitadas++;
+		archivo.seek((long) pagina * P);
+		int tipo = archivo.readInt();
+		int n = archivo.readInt();
+		if (tipo != 0 && tipo != 1) {
+			return "Tipo invalido en pagina " + pagina;
+		}
+		if (tipo == 0) {
+			if (n < 0 || n > L) {
+				return "Ocupacion invalida en hoja " + pagina;
+			}
+		} else {
+			if (n < 0 || n >= M) {
+				return "Ocupacion invalida en interno " + pagina;
+			}
+		}
+		Nodo nodo = leerNodo(pagina, false);
+		if (pagina != raiz) {
+			if (tipo == 0) {
+				if (n < (L + 1) / 2) {
+					return "Hoja " + pagina + " con pocas claves";
+				}
+			} else {
+				if (n + 1 < (M + 1) / 2) {
+					return "Interno " + pagina + " con pocos hijos";
+				}
+			}
+		} else if (tipo == 1 && n < 1) {
+			return "Raiz interna sin suficientes hijos";
+		}
+		//los claves tienen que ser mayor si o si
+		for (int i = 1; i < n; i++) {
+			if (nodo.claves[i - 1] >= nodo.claves[i]) {
+				return "Claves desordenadas en pagina " + pagina;
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			if (minimo != null && nodo.claves[i] < minimo) {
+				return "Clave menor que la cota en pagina " + pagina;
+			}
+			if (maximo != null && nodo.claves[i] >= maximo) {
+				return "Clave mayor o igual que la cota en pagina " + pagina;
+			}
+		}
+		if (tipo == 0) {
+			if (nivelActual != niveles) {
+				return "Hoja " + pagina + " en nivel incorrecto";
+			}
+			if (estado.ultimaHoja != -1) {
+				Nodo anterior =leerNodo(estado.ultimaHoja, false);
+				if (anterior.siguiente != pagina) {
+					return "Cadena de hojas incorrecta entre "
+							+ estado.ultimaHoja + " y " + pagina;
+				}
+			}
+			estado.ultimaHoja = pagina;
+			estado.clavesContadas += n;
+		} else {
+			if (nivelActual >= niveles) {
+				return "Interno " + pagina + " en nivel incorrecto";
+			}
+			// Recorrer los hijos de izquierda a derecha
+			for (int i = 0; i <= n; i++) {
+				Long cotaInferior = minimo;
+				Long cotaSuperior = maximo;
+				if (i > 0) {
+					cotaInferior = nodo.claves[i - 1];
+				}
+				if (i < n) {
+					cotaSuperior = nodo.claves[i];
+				}
+				String error = verificarNodo(
+						nodo.hijos[i],
+						nivelActual + 1,
+						cotaInferior,
+						cotaSuperior,
+						estado);
+				if (!error.equals("OK")) {
+					return error;
+				}
+			}
+		}
+		return "OK";
+	}
+	public int[] caminoBusqueda(long clave) throws IOException {
+		int[] camino = new int[niveles];
+		Nodo nodo = leerNodo(raiz);
+		int i = 0;
+		while (nodo.tipo != 0) {
+			camino[i] = nodo.pagina;
+			i++;
+			int indice = indiceHijo(nodo, clave);
+			nodo = leerNodo(nodo.hijos[indice]);
+		}
+		camino[i] = nodo.pagina;	
+		return camino;
+	}
 	@Override
 	public void close() throws IOException {
 		try {

@@ -36,8 +36,8 @@ public class ArbolBMas implements AutoCloseable{
 	private int niveles;
 	private long cantClaves;
 
-	private int cantPagEscritas;
-	private int cantPagLeidas;
+	private long cantPagEscritas;
+	private long cantPagLeidas;
 
 	private RandomAccessFile archivo;
 
@@ -225,9 +225,22 @@ public class ArbolBMas implements AutoCloseable{
 		int n = buffer.getInt();
 		int sgte = buffer.getInt();
 
+		//verificar que el tipo de nodo es valido
+		if (tipo != 0 && tipo != 1) {
+			throw new FormatoInvalidoException("Tipo invalido en pag: " + pagina);
+		}
+		int maxClaves = (tipo == 0) ? L : M - 1;
+		if (n < 0 || n > maxClaves) {
+    		throw new FormatoInvalidoException("Cantidad de claves invalida en pagina " + pagina);
+		}
+
 		Nodo nodo = new Nodo(pagina, tipo, M, L);
 		nodo.n = n;
 		nodo.siguiente = sgte;
+
+		if (tipo == 1 && sgte != -1) {
+			throw new FormatoInvalidoException("Nodo interno con siguiente distinto de -1 en pagina " + pagina);
+		}
 
 		if (tipo == 0) { // nodo
 			for (int i = 0; i < n; i++) {
@@ -506,7 +519,7 @@ public class ArbolBMas implements AutoCloseable{
 	public int cantidadPaginas(){
 		return this.numPaginas;
 	}
-	public long cantidadClavez(){
+	public long cantidadClaves(){
 		return this.cantClaves;
 	}
 	public int tamPagina(){
@@ -522,7 +535,7 @@ public class ArbolBMas implements AutoCloseable{
 		return cantPagEscritas;
 	}
 	public String volcarPagina(int nro) throws IOException {
-		Nodo nodo=leerNodo(nro);
+		Nodo nodo=leerNodo(nro, false);
 		String resultado="#"+nro;
 		int i;
 		if (nodo.tipo == 0) {
@@ -531,7 +544,10 @@ public class ArbolBMas implements AutoCloseable{
 			resultado+=" sig="+nodo.siguiente;
 			resultado+=" [";
 			for (i=0; i<nodo.n; i++) {
-				resultado+=" ";
+
+				if (i > 0) {
+					resultado+=" ";
+				}
 				resultado+=nodo.claves[i]+":"+nodo.posiciones[i];
 			}
 			resultado+="]";
@@ -600,15 +616,7 @@ public class ArbolBMas implements AutoCloseable{
 		}
 		return resultado;
 	}
-	public class EstadisticasBMas {
 
-		public int hojas;
-		public int internos;
-
-		public double ocupacionHojas;
-		public double ocupacionInternos;
-	}
-	
 	public EstadisticasBMas estadisticas() throws IOException {
 		EstadisticasBMas e = new EstadisticasBMas();
 		int sumaHojas = 0;
@@ -642,6 +650,7 @@ public class ArbolBMas implements AutoCloseable{
 		}
 		return e;
 	}
+
 	private static class EstadoVerificacion {
 		boolean[] visitadas;
 		int paginasVisitadas;
@@ -704,22 +713,18 @@ public class ArbolBMas implements AutoCloseable{
 		}
 		estado.visitadas[pagina] = true;
 		estado.paginasVisitadas++;
-		archivo.seek((long) pagina * P);
-		int tipo = archivo.readInt();
-		int n = archivo.readInt();
-		if (tipo != 0 && tipo != 1) {
-			return "Tipo invalido en pagina " + pagina;
+
+		Nodo nodo;
+
+		try {
+			nodo = leerNodo(pagina, false);
+		} catch (FormatoInvalidoException e) {
+			return "Error al leer pagina " + pagina + ": " + e.getMessage();
 		}
-		if (tipo == 0) {
-			if (n < 0 || n > L) {
-				return "Ocupacion invalida en hoja " + pagina;
-			}
-		} else {
-			if (n < 0 || n >= M) {
-				return "Ocupacion invalida en interno " + pagina;
-			}
-		}
-		Nodo nodo = leerNodo(pagina, false);
+
+		int tipo = nodo.tipo;
+		int n = nodo.n;
+
 		if (pagina != raiz) {
 			if (tipo == 0) {
 				if (n < (L + 1) / 2) {
@@ -797,7 +802,7 @@ public class ArbolBMas implements AutoCloseable{
 			int indice = indiceHijo(nodo, clave);
 			nodo = leerNodo(nodo.hijos[indice]);
 		}
-		camino[i] = nodo.pagina;	
+		camino[i] = nodo.pagina;
 		return camino;
 	}
 	@Override

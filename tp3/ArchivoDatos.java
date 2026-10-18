@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
-public class ArchivoDatos {
+import java.io.IOException;
+public class ArchivoDatos implements AutoCloseable {
 
     private RandomAccessFile archivo;
     private long registrosLeidos = 0;
@@ -17,7 +17,7 @@ public class ArchivoDatos {
         return new ArchivoDatos(archivo);
     }
     public static ArchivoDatos abrir(String ruta) throws IOException {
-        //r es solo leer no se puede escribir 
+        //r es solo leer no se puede escribir
         RandomAccessFile archivo = new RandomAccessFile(ruta, "r");
         return new ArchivoDatos(archivo);
     }
@@ -35,13 +35,13 @@ public class ArchivoDatos {
         return pos;
     }
     public String leer(long pos) throws IOException {
-        //ir a la posicion 
+        //ir a la posicion
         archivo.seek(pos);
         //leer clave
         long clave = archivo.readLong();
         //leer la cantidad de bytes
         int largo = archivo.readInt();
-        //crear el arreglo para guardar despues 
+        //crear el arreglo para guardar despues
         byte[] bytes = new byte[largo];
         //esta funcion lee toda la cantidad de bytes del tamanio del arreglo y llena
         archivo.readFully(bytes);
@@ -83,6 +83,7 @@ public class ArchivoDatos {
         return archivo.length();
     }
 
+    @Override
     public void close() throws IOException {
         archivo.close();
     }

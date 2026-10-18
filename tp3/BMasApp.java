@@ -110,7 +110,7 @@ public class BMasApp {
 
         String linea;
         int n = 0;
-        //mientras que exista mas filas y que no sea nula la fila 
+        //mientras que exista mas filas y que no sea nula la fila
         while (n < filas && (linea = lector.readLine()) != null) {
             //busca la posicion del primer \t
             int fin = linea.indexOf('\t');
@@ -139,7 +139,7 @@ public class BMasApp {
             int i;
             for (i = n - 1; i > 0; i--) {
                 //genera un numero de 0 a i
-                int j = rng.nextInt(i + 1); 
+                int j = rng.nextInt(i + 1);
 
                 long aux = claves[i];
                 claves[i] = claves[j];
@@ -158,13 +158,13 @@ public class BMasApp {
         datos.close();
         arbol.close();
     }
-    
+
     public static void buscar(String entrada) throws Exception {
         //si empieza con tt le saca
         if (entrada.startsWith("tt")) {
             entrada = entrada.substring(2);
         }
-        //convierte de stirng a long 
+        //convierte de stirng a long
         long clave = Long.parseLong(entrada);
 
         ArbolBMas arbol = ArbolBMas.abrir("indice.dat");
@@ -175,7 +175,7 @@ public class BMasApp {
         long pos = arbol.buscar(clave);
         //cant pag leida
         long paginas = arbol.paginasLeidas();
-        
+
         int[] camino = arbol.caminoBusqueda(clave);
         //imprimimos el camino
         System.out.print("paginas leidas: " + paginas + " (");
@@ -196,7 +196,7 @@ public class BMasApp {
         datos.close();
         arbol.close();
     }
-    
+
     public static void rango(long desde, long hasta, int mostrar)throws Exception {
 
         ArbolBMas arbol = ArbolBMas.abrir("indice.dat");
@@ -256,7 +256,7 @@ public class BMasApp {
 
         arbol.close();
     }
-    
+
     public static void verificar() throws Exception {
 
         ArbolBMas arbol = ArbolBMas.abrir("indice.dat");
@@ -266,7 +266,7 @@ public class BMasApp {
         arbol.close();
     }
 
-    
+
     public static void pagina(int nro) throws Exception {
 
         ArbolBMas arbol = ArbolBMas.abrir("indice.dat");

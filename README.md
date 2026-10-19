@@ -92,6 +92,4 @@ La Tabla D confirma la tendencia:
 
 En todos los casos, `páginas leídas − hojas leídas = 2 = h−1`. Para `w = 10000`, una consulta por rango leyó **75,99 páginas** en promedio; realizar `s` búsquedas independientes requeriría aproximadamente `9351,75 · 3 = 28055,25` lecturas de páginas, sin considerar caché. El recorrido por rango es más eficiente porque no repite el descenso desde la raíz para cada resultado.
 
----
 
-**Comprobación pendiente:** verificar directamente en el TSV si los `tconst` del modo Archivo llegan en orden numérico estrictamente creciente. Las Tablas A, B, C y D corresponden a las ejecuciones experimentales realizadas.

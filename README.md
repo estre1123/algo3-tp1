@@ -193,7 +193,7 @@ Las mediciones se realizan sin buffer de páginas propio. Los tiempos dependen d
 
 ## Uso de IA
 
-Utilizamos ChatGPT como herramienta de apoyo durante el desarrollo y la revisión del trabajo. Principalmente lo empleamos para comprobar si nuestra implementación se comportaba según la consigna, detectar errores que habíamos pasado por alto y comprender algunos requisitos de los ejercicios y de las clases de prueba.
+Utilizamos ChatGPT como herramienta de apoyo durante el desarrollo y la revisión del trabajo. Principalmente lo empleamos para comprobar si nuestra implementación se comportaba según la consigna, detectar errores que habíamos pasado por alto y comprender algunos requisitos de los ejercicios y de las clases de prueba. Para esto le dimos el pdf de la consigna y le pedimos que basara sus respuestas en ella.
 
 También solicitamos explicaciones sobre las operaciones más complejas del árbol B+, como la inserción con divisiones de hojas, nodos internos y creación de una nueva raíz. La generación de código se utilizó principalmente para ampliar los tests, comparar los resultados con los valores esperados y mejorar la impresión de las comprobaciones y de las tablas. También utilizamos código inicialmente propuesto por IA para parte de ExperimentoBMas, que posteriormente revisamos y modificamos.
 
@@ -217,12 +217,10 @@ Además, ampliamos las pruebas de búsquedas, duplicados, rangos y persistencia;
 
 Utilizamos ChatGPT mediante Codex. Algunos prompts textuales de esta conversación fueron:
 
-- «Podes verificar el tp3?»
-- «ok hay que terminar el tp pero vamos por partes y explicame no solo que esta mal o hay que corregir sino para que funciona, como y que deberia esperar»
+- «De la clase ArbolBMas actual, verifica las funciones y decime no solo que esta mal o hay que corregir sino para que funciona, como y que deberia esperar segun el TP»
 - «podes arreglarme la impresion de esa tabla o sea queda toda desfasadas las coluimnas»
 - «experimentoBMas que es lo que hace realmente?»
 - «para que sirve especificamente archivosDatos y como se usa?»
-- «explicame mejor la parte de la defensa del readme en el ej2»
 
 También resumimos el tipo de consultas realizadas con estos ejemplos de formulación:
 

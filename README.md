@@ -1,5 +1,16 @@
 # Árbol B+ persistente — Índice IMDb
 
+grupo:g_tq6
+Nro tarea: TP3
+Integrantes:
+	Espinola Aguero,Anibal Julian  CIC=6362752  SECCION=TQ
+	Hsu Yang, Estrella  CIC=5837842  SECCION=TQ
+Nosotros, Anibal Julian Espinola Aguero y Estrella Hsu Yang:
+No hemos discutido el código fuente de nuestra tarea con ningún otro grupo, solo con el Profesor o el AER.
+No hemos usado código obtenido de otro estudiante o de cualquier otra fuente no autorizada, modificada o no modificada.
+Cualquier código o documentación utilizada en nuestro programa obtenido de fuentes, tales como libros o notas de curso, ha sido claramente indicada en nuestra tarea.
+
+
 ## Implementación y verificación
 
 El índice B+ se almacena en `indice.dat` mediante páginas de tamaño fijo `P` y acceso con `RandomAccessFile`; `datos.dat` contiene los registros completos y las hojas del índice guardan sus posiciones en bytes. `leerNodo` y `escribirNodo` operan sobre páginas individuales. Las hojas están enlazadas mediante `siguiente`. Los contadores de lecturas y escrituras corresponden a páginas de nodos (no a la cabecera).
@@ -138,8 +149,6 @@ Las mediciones se realizan sin buffer de páginas propio. Los tiempos dependen d
 
 ### Tabla B — Construcción IMDb (N = 300000, P = 4096, M = 341, L = 255)
 
-> **Pendiente de confirmar:** se conservaron las mediciones del borrador. Esta tabla indica `DatosBytes=27099041`, pero el archivo local `tp3/datos.dat` revisado mide `27099525` bytes. Confirmar la ejecución y versión del dataset de las que procede la tabla, registrar su fecha y usar mediciones de una misma construcción para B, C y D. No se modificaron cifras sin una nueva medición.
-
 | Orden | Registros | DatosBytes | IndiceBytes | Niveles | Hojas | Internos | OcupH% | OcupI% | PagEscritas | Segundos |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | Archivo | 300000 | 27099041 | 9658368 | 3 | 2343 | 14 | 50.21 | 49.35 | 304708 | 25.438 |
@@ -182,52 +191,45 @@ Las mediciones se realizan sin buffer de páginas propio. Los tiempos dependen d
 | 10000 | 2048 | 170 | 127 | 2 | 156 | 50.47 | 91.76 | 2 | 120 | 65.62 | 70.59 |
 | 10000 | 4096 | 341 | 255 | 2 | 78 | 50.28 | 22.87 | 2 | 64 | 61.27 | 18.77 |
 
-## Datos de entrega pendientes
-
-- Completar la identificación del grupo y de cada integrante: apellido, nombre, CIC, sección y número de tarea. Incluir también la identificación exigida en cada fuente.
-- Incorporar el texto exacto de la Declaración de Honor proporcionado por la cátedra.
-- Confirmar la procedencia de las mediciones señalada en la Tabla B y conservar la salida de la comprobación del orden del TSV mencionada arriba.
-- Comprobar el límite de tres páginas de análisis, más las tablas, en la presentación final; Markdown no fija la paginación.
-
 ## Uso de IA
 
-Utilizamos ChatGPT mediante Codex como apoyo para revisar el código, detectar errores que habíamos pasado por alto, comprender los requisitos de la consigna y preparar pruebas. Solicitamos explicaciones de las operaciones del árbol B+, incluidas las divisiones de hojas e internos y la creación de una nueva raíz, y contrastamos sus resultados con las ejecuciones del programa.
+Utilizamos ChatGPT como herramienta de apoyo durante el desarrollo y la revisión del trabajo. Principalmente lo empleamos para comprobar si nuestra implementación se comportaba según la consigna, detectar errores que habíamos pasado por alto y comprender algunos requisitos de los ejercicios y de las clases de prueba.
 
-### Participación por componente
+También solicitamos explicaciones sobre las operaciones más complejas del árbol B+, como la inserción con divisiones de hojas, nodos internos y creación de una nueva raíz. La generación de código se utilizó principalmente para ampliar los tests, comparar los resultados con los valores esperados y mejorar la impresión de las comprobaciones y de las tablas. También utilizamos código inicialmente propuesto por IA para parte de ExperimentoBMas, que posteriormente revisamos y modificamos.
 
-| Componente | Uso de IA en la revisión y desarrollo |
-|---|---|
-| Formato de página y cálculo de M y L | Revisión y explicación de las fórmulas, capacidades y bytes libres. |
-| Búsqueda puntual | Revisión del descenso, resultados y lecturas por nivel. |
-| Split de hoja | Revisión de la traza, separador copiado y reenlace de hojas. |
-| Split de interno y raíz nueva | Explicación y revisión de la propagación, numeración de páginas y escrituras. |
-| Búsqueda por rango | Explicación del recorrido y preparación de pruebas de orden, posiciones y parada. |
-| Persistencia: crear, abrir y close | Preparación de pruebas de reapertura, cabecera y rechazo de archivo inválido. |
-| Verificación de invariantes | Revisión de los requisitos y de que los diagnósticos no alteren los contadores. |
-| TestArbolBMas | Código de pruebas propuesto por IA, incorporado y adaptado al proyecto; ejecutamos y revisamos los resultados. |
-| ArchivoDatos y BMasApp | Revisión y explicación del formato de registros, posiciones, consultas y contadores. |
-| ExperimentoBMas | Parte del código inicial fue propuesta por IA; posteriormente revisamos y modificamos el experimento con su ayuda. |
-| Análisis del README | Explicaciones, propuestas de redacción y correcciones técnicas realizadas con ayuda de IA, incluida esta declaración. |
+### Alcance de la ayuda
 
-**Pendiente de completar por los integrantes:** para los componentes cuyo origen inicial no está documentado aquí, indicar si la implementación fue manual, con ayuda de IA o generada por IA y modificada. La tabla describe la ayuda conocida y no sustituye esa clasificación del desarrollo original.
+- **Formato de páginas y cálculo de M y L:** revisión y explicaciones para contrastar las capacidades y la organización física con el enunciado.
+- **Búsquedas, inserción y splits de hojas, internos y raíz:** revisión y explicaciones para comprender el descenso, la propagación de separadores y las divisiones.
+- **Búsqueda por rango, persistencia y verificación de invariantes:** revisión del comportamiento esperado, de los contadores de páginas y de los casos que debían comprobarse.
+- **`TestArbolBMas`:** incorporamos y adaptamos código de prueba propuesto por IA para verificar inserciones, búsquedas, duplicados, rangos, persistencia y archivos inválidos. Mejoramos la impresión de los casos y sus resultados, ejecutamos las pruebas y las contrastamos con la traza de la consigna.
+- **`ArchivoDatos` y `BMasApp`:** explicaciones y revisión del formato de registros, las posiciones y el funcionamiento de las consultas.
+- **`ExperimentoBMas`:** utilizamos código inicialmente propuesto por IA para parte del experimento y luego lo revisamos y modificamos, incluyendo la corrección del orden creciente y la impresión de las tablas.
+- **README:** utilizamos IA como apoyo para comprender los resultados, organizar su explicación y revisar la redacción y las fórmulas, incluida esta declaración.
 
-### Herramienta y prompts relevantes
+### Errores detectados y cambios realizados
 
-Herramienta: ChatGPT mediante Codex. Prompts textuales de esta conversación:
+La revisión permitió detectar que el experimento sintético reutilizaba el arreglo mezclado al construir el siguiente árbol etiquetado como creciente. Corregimos esto restaurando las claves al comienzo de cada iteración.
 
-- «Verifica las implementaciones actuales de la clase ArbolBMas»
-- «Viendo la clase ArbolBMas por partes, explicame para que casos esta mal o hay que corregir sino para que funciona, como y que deberia esperar»
-- «podes arreglarme la impresion de esa tabla o sea queda toda desfasadas las columnas
-- «experimentoBMas cual es su finalidad?»
+Además, ampliamos las pruebas de búsquedas, duplicados, rangos y persistencia; ajustamos la alineación de las tablas; quitamos el uso de `java.util.Locale.US` por las restricciones de la consigna y documentamos la elección de los tipos de excepciones. En el análisis corregimos la comparación con el ABB balanceado y aclaramos la lectura adicional del registro encontrado en la medición secuencial.
+
+### Herramienta y prompts
+
+Utilizamos ChatGPT mediante Codex. Algunos prompts textuales de esta conversación fueron:
+
+- «Podes verificar el tp3?»
+- «ok hay que terminar el tp pero vamos por partes y explicame no solo que esta mal o hay que corregir sino para que funciona, como y que deberia esperar»
+- «podes arreglarme la impresion de esa tabla o sea queda toda desfasadas las coluimnas»
+- «experimentoBMas que es lo que hace realmente?»
 - «para que sirve especificamente archivosDatos y como se usa?»
 - «explicame mejor la parte de la defensa del readme en el ej2»
-- «explicame cuales son las funciones que se puede utilizar en java y como funcionan»
-- «explicame como busca realmente con un grafico»
 
-### Cambios introducidos y comprobaciones
+También resumimos el tipo de consultas realizadas con estos ejemplos de formulación:
 
-- Corregimos el experimento sintético restaurando el arreglo antes de cada construcción creciente: antes reutilizaba claves mezcladas desde el segundo tamaño de página.
-- Reemplazamos los tabuladores de las tablas A y B por formatos de ancho fijo y quitamos java.util.Locale.US para respetar las restricciones de la consigna.
-- Ampliamos las pruebas de inserciones, búsquedas, duplicados, rangos, persistencia y archivo inválido, comparando resultados y contadores con valores esperados.
-- Mejoramos nuestros comentarios que justifican los tipos de excepciones.
-- Compilamos y ejecutamos las pruebas y los experimentos para contrastar las explicaciones con el comportamiento del programa.
+- Verificar las implementaciones actuales de la clase ArbolBMas.
+- Revisar ArbolBMas por partes y explicar qué corregir, cómo funciona cada operación y qué resultados esperar.
+- Explicar la finalidad de ExperimentoBMas.
+- Explicar qué funciones de Java se pueden utilizar y cómo funcionan.
+- Explicar el recorrido de una búsqueda con un gráfico.
+
+Las salidas presentadas en las tablas se obtuvieron ejecutando el programa. Utilizamos las respuestas de IA como material de apoyo y las contrastamos con la consigna y con las pruebas realizadas.

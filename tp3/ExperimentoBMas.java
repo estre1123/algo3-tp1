@@ -43,20 +43,31 @@ public class ExperimentoBMas {
         for (int i = 0; i < n; i++) claves[i] = i + 1;
 
         System.out.println("TABLA A - ESTRUCTURA SINTETICA (N=" + n + ")");
-        System.out.println("P\tM\tL\tNivOrd\tHojOrd\tOcupHOrd%\tOcupIOrd%\tNivAle\tHojAle\tOcupHAle%\tOcupIAle%");
+		System.out.printf(
+			"%5s %5s %5s | %6s %8s %10s %10s | %6s %8s %10s %10s%n",
+			"P", "M", "L",
+			"NivOrd", "HojOrd", "OcupHOrd%", "OcupIOrd%",
+			"NivAle", "HojAle", "OcupHAle%", "OcupIAle%"
+		);
 
         for (int p : tamanos) {
+
+			//crear ordenado otv
+			for (int i = 0; i < n; i++) claves[i] = i + 1;
+
             ArbolBMas orden = ArbolBMas.crear("sintetico_orden_" + p + ".dat", p);
+
             for (int i = 0; i < n; i++) orden.insertar(claves[i], claves[i]);
-            comprobar(orden);
-            EstadisticasBMas eOrden = orden.estadisticas();
+
+			comprobar(orden);
+
+			EstadisticasBMas eOrden = orden.estadisticas();
             int m = orden.ordenInterno();
             int l = orden.capacidadHoja();
             int nivelesOrden = orden.niveles();
             orden.close();
 
-            // Se restaura el orden original antes de cada permutacion.
-            for (int i = 0; i < n; i++) claves[i] = i + 1;
+
             Random rng = new Random(2026);
             for (int i = n - 1; i > 0; i--) {
                 int j = rng.nextInt(i + 1);
@@ -71,13 +82,16 @@ public class ExperimentoBMas {
             EstadisticasBMas eAleatorio = aleatorio.estadisticas();
             int nivelesAleatorio = aleatorio.niveles();
             aleatorio.close();
-
-            System.out.printf(java.util.Locale.US,
-                    "%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%d\t%d\t%.2f\t%.2f%n",
-                    p, m, l, nivelesOrden, eOrden.hojas,
-                    eOrden.ocupacionHojas * 100, eOrden.ocupacionInternos * 100,
-                    nivelesAleatorio, eAleatorio.hojas,
-                    eAleatorio.ocupacionHojas * 100, eAleatorio.ocupacionInternos * 100);
+			System.out.printf(
+				"%5d %5d %5d | %6d %8d %10.2f %10.2f | %6d %8d %10.2f %10.2f%n",
+				p, m, l,
+				nivelesOrden, eOrden.hojas,
+				eOrden.ocupacionHojas * 100,
+				eOrden.ocupacionInternos * 100,
+				nivelesAleatorio, eAleatorio.hojas,
+				eAleatorio.ocupacionHojas * 100,
+				eAleatorio.ocupacionInternos * 100
+			);
         }
     }
 
@@ -96,7 +110,12 @@ public class ExperimentoBMas {
         ResultadoConstruccion ordenado = construirImdb(ruta, filas, p, false);
 
         System.out.println("TABLA B - CONSTRUCCION IMDb");
-        System.out.println("Orden\tRegistros\tDatosBytes\tIndiceBytes\tP\tM\tL\tNiveles\tHojas\tInternos\tOcupH%\tOcupI%\tPagEscritas\tSegundos");
+		System.out.printf(
+			"%-9s %9s %11s %11s %5s %5s %5s %7s %7s %8s %8s %8s %11s %9s%n",
+			"Orden", "Registros", "DatosBytes", "IndiceBytes",
+			"P", "M", "L", "Niveles", "Hojas", "Internos",
+			"OcupH%", "OcupI%", "PagEscritas", "Segundos"
+		);
         imprimirConstruccion("Archivo", ordenado);
         imprimirConstruccion("Aleatorio", aleatorio);
         System.out.println("indice.dat y datos.dat quedaron construidos en orden del archivo.");
@@ -174,14 +193,26 @@ public class ExperimentoBMas {
         return r;
     }
 
-    public static void imprimirConstruccion(String nombre, ResultadoConstruccion r) {
-        System.out.printf(java.util.Locale.US,
-                "%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.2f\t%d\t%.3f%n",
-                nombre, r.registros, r.bytesDatos, r.bytesIndice,
-                r.p, r.m, r.l, r.niveles, r.hojas, r.internos,
-                r.ocupacionHojas * 100, r.ocupacionInternos * 100,
-                r.paginasEscritas, r.segundos);
-    }
+	public static void imprimirConstruccion(String nombre, ResultadoConstruccion r) {
+
+		System.out.printf(
+			"%-9s %9d %11d %11d %5d %5d %5d %7d %7d %8d %8.2f %8.2f %11d %9.3f%n",
+			nombre,
+			r.registros,
+			r.bytesDatos,
+			r.bytesIndice,
+			r.p,
+			r.m,
+			r.l,
+			r.niveles,
+			r.hojas,
+			r.internos,
+			r.ocupacionHojas * 100,
+			r.ocupacionInternos * 100,
+			r.paginasEscritas,
+			r.segundos
+		);
+	}
 
     // Tablas C y D: usar el indice IMDb construido en orden del archivo.
     public static void busquedas() throws Exception {
@@ -248,7 +279,7 @@ public class ExperimentoBMas {
                 totalHojas += hojas;
                 totalNanos += tiempo;
             }
-            System.out.printf(java.util.Locale.US, "%d\t%.3f\t%.3f\t%.3f\t%.3f%n",
+            System.out.printf("%d\t%.3f\t%.3f\t%.3f\t%.3f%n",
                     w, totalRegistros / 100.0, totalPaginas / 100.0,
                     totalHojas / 100.0, totalNanos / 100000.0);
         }
@@ -286,7 +317,7 @@ public class ExperimentoBMas {
             paginasTotal += arbol.paginasLeidas();
             registrosTotal += datos.registrosLeidos();
         }
-        System.out.printf(java.util.Locale.US, "%s\t%d\t%.3f\t%.3f\t%.3f%n",
+        System.out.printf("%s\t%d\t%.3f\t%.3f\t%.3f%n",
                 nombre, cantidad, paginasTotal / (double) cantidad,
                 registrosTotal / (double) cantidad, nanosTotal / (cantidad * 1000.0));
     }
